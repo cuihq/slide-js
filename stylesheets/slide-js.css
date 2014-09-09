@@ -1,0 +1,26 @@
+/* line 1, ../scss/slide-js.scss */
+body {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* line 6, ../scss/slide-js.scss */
+.slide {
+  display: block;
+  min-height: 500px;
+  padding: 40px 60px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #666666;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: -1px;
+  background-color: white;
+}
+
+/* line 21, ../scss/slide-js.scss */
+body {
+  background: radial-gradient(#f0f0f0, #bebebe);
+}
