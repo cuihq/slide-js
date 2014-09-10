@@ -158,7 +158,7 @@ class Slide
     @progress_inner = document.createElement 'div'
     @progress_inner.className = 'progress-inner'
     @progress_outer_node.appendChild @progress_inner
-    @control_node.appendChild @progress_bar_node
+    @parent.appendChild @progress_bar_node
 
     @page_info_node = document.createElement 'div'
     @page_info_node.className = 'page-info'

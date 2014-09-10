@@ -215,7 +215,7 @@
       this.progress_inner = document.createElement('div');
       this.progress_inner.className = 'progress-inner';
       this.progress_outer_node.appendChild(this.progress_inner);
-      this.control_node.appendChild(this.progress_bar_node);
+      this.parent.appendChild(this.progress_bar_node);
       this.page_info_node = document.createElement('div');
       this.page_info_node.className = 'page-info';
       this.current_page_node = document.createElement('span');
