@@ -39,7 +39,7 @@ body {
 
 /* line 34, ../scss/slide-js.scss */
 .control {
-  height: 35px;
+  height: 47px;
   background: #f0f0f0;
   background: #f0f0f0 linear-gradient(#f0f0f0, #dddddd);
   border-width: 0px 1px 1px 1px;
@@ -52,27 +52,31 @@ body {
   text-shadow: #000 0 1px 0;
 }
 /* line 46, ../scss/slide-js.scss */
-.control .previous-page, .control .next-fragment, .control .previous-fragment, .control .next-page, .control .full-screen {
+.control .control-action {
   height: 35px;
+  width: 35px;
   float: left;
-  padding: 0px 10px 0px 10px;
+  padding: 0px;
+  margin: 6px;
   cursor: pointer;
 }
-/* line 52, ../scss/slide-js.scss */
+/* line 54, ../scss/slide-js.scss */
 .control .page-info {
   float: left;
   height: 35px;
+  margin: 6px;
   padding: 0px 10px 0px 10px;
 }
-/* line 57, ../scss/slide-js.scss */
+/* line 60, ../scss/slide-js.scss */
 .control .progress-bar {
   height: 35px;
   float: left;
   padding: 14px 0;
+  margin: 6px;
 }
-/* line 61, ../scss/slide-js.scss */
+/* line 65, ../scss/slide-js.scss */
 .control .progress-bar .progress-outer {
-  width: 680px;
+  width: 600px;
   height: 6px;
   padding: 1px;
   background: #666666;
@@ -80,7 +84,7 @@ body {
   border-radius: 4px;
   box-shadow: #000000 0 1px 0, #666666 0 -1px 0;
 }
-/* line 69, ../scss/slide-js.scss */
+/* line 73, ../scss/slide-js.scss */
 .control .progress-bar .progress-outer .progress-inner {
   height: 6px;
   width: 10px;
@@ -90,7 +94,31 @@ body {
   background: #33af33 linear-gradient(#88b038, #33af33);
 }
 
-/* line 80, ../scss/slide-js.scss */
+/* line 84, ../scss/slide-js.scss */
+.full-screen {
+  width: 100%;
+  height: 100%;
+}
+/* line 87, ../scss/slide-js.scss */
+.full-screen .slide-title {
+  width: auto;
+}
+/* line 90, ../scss/slide-js.scss */
+.full-screen .slide {
+  width: auto;
+  height: 100%;
+}
+/* line 94, ../scss/slide-js.scss */
+.full-screen .control {
+  width: auto;
+  position: fixed;
+  z-index: 100;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* line 103, ../scss/slide-js.scss */
 body {
   background: radial-gradient(#f0f0f0, #bebebe);
 }

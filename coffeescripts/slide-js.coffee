@@ -1,14 +1,135 @@
+ACTIONS = [
+  { 
+    cls: 'previous-page-action',    
+    val: '《' ,
+    key: 37,
+    title: '上一页'  
+    run: (slide) ->
+      if 1 < slide.current_number <= slide.length
+        slide.children[slide.current_number - 1].hide()
+        slide.set_current_number(slide.current_number - 1)
+        slide.children[slide.current_number - 1].show()
+      else if slide.current_number is 1 && config.cycle
+        slide.children[slide.current_number - 1].hide()
+        slide.current_number = slide.length
+        slide.children[slide.current_number - 1].show()
+  },
+  { 
+    cls: 'previous-fragment-action', 
+    val: '&lt;',
+    key: 38,
+    title: '上一段'
+    run: (slide) ->
+      if slide.current_number is 1 && slide.children[slide.current_number - 1].is_first() && config.cycle
+        slide.children[slide.current_number - 1].hide()
+        slide.set_current_number(slide.length)
+        slide.children[slide.current_number - 1].show()
+      else if 1 < slide.current_number <= slide.length && slide.children[slide.current_number - 1].is_first()
+        slide.children[slide.current_number - 1].hide()
+        slide.set_current_number(slide.current_number - 1)
+        slide.children[slide.current_number - 1].show()
+      else if 1 <= slide.current_number <= slide.length
+        slide.children[slide.current_number - 1].previous()
+  },
+  {     
+    cls: 'next-fragment-action',    
+    val: '&gt;',
+    key: 40, 
+    title: '下一段'
+    run: (slide) ->
+      if slide.current_number is slide.length && slide.children[slide.current_number - 1].is_end() && config.cycle
+        slide.children[slide.current_number - 1].hide()
+        slide.set_current_number(1)
+        slide.children[slide.current_number - 1].show()
+      else if 1 <= slide.current_number < slide.length && slide.children[slide.current_number - 1].is_end()
+        slide.children[slide.current_number - 1].hide()
+        slide.set_current_number(slide.current_number + 1)
+        slide.children[slide.current_number - 1].next()
+      else if 1 <= slide.current_number <= slide.length
+        slide.children[slide.current_number - 1].next() 
+  },
+  {      
+    cls: 'next-page-action',     
+    val: '》',
+    key: 39, 
+    title: '下一页' 
+    run: (slide) ->
+      if 1 <= slide.current_number < slide.length
+        if slide.children[slide.current_number - 1].is_end()
+          slide.children[slide.current_number - 1].hide()
+          slide.set_current_number(slide.current_number + 1)
+          slide.children[slide.current_number - 1].show()
+        else
+          slide.children[slide.current_number - 1].show() 
+      else if slide.current_number is slide.length && config.cycle
+        if slide.children[slide.current_number - 1].is_end()
+          slide.children[slide.current_number - 1].hide()
+          slide.set_current_number(1)
+          slide.children[slide.current_number - 1].show()
+        else
+          slide.children[slide.current_number - 1].show()
+  },
+  {
+    cls: 'full-screen-action',
+    val: '□',
+    key: 122,
+    title: '全屏'
+    init: (slide) ->
+      if document.addEventListener
+        document.addEventListener('fullscreenchange', (event) -> 
+          if document.webkitCurrentFullScreenElement 
+            slide.parent.classList.add('full-screen')
+          else
+            slide.parent.classList.remove('full-screen')
+        )
+        document.addEventListener('webkitfullscreenchange', (event) ->  
+          if document.webkitCurrentFullScreenElement 
+            slide.parent.classList.add('full-screen')
+          else
+            slide.parent.classList.remove('full-screen')
+        )
+        document.addEventListener('mozfullscreenchange', (event) ->  
+          if document.webkitCurrentFullScreenElement 
+            slide.parent.classList.add('full-screen')
+          else
+            slide.parent.classList.remove('full-screen')
+        )
+    run: (slide) ->
+      if document.webkitCurrentFullScreenElement
+        request = (document.cancelFullScreen|| document.webkitCancelFullScreen|| document.mozCancelFullScreen|| document.exitFullscreen)
+        request.call(document) if request   
+      else
+        request = (slide.parent.requestFullScreen || slide.parent.mozRequestFullScreen || slide.parent.webkitRequestFullScreen || slide.parent.msRequestFullScreen)
+        request.call(slide.parent) if request
+  }
+]
+
+class Action
+  constructor: (parent, slide, config) ->
+    node = document.createElement 'button'
+    node.className = 'control-action ' + config.cls
+    node.innerHTML = config.val if config.val
+    node.setAttribute('title', config.title) if config.title
+    node.onclick = -> config.run(slide)
+    if document.addEventListener
+      document.addEventListener('keyup', (event) -> config.run(slide) if config.key is event.keyCode)
+    else
+      document.attachEvent('onkeyup', (event) -> config.run(slide) if config.key is event.keyCode )
+    parent.appendChild node
+    config.init(slide) if config.init
+
+
 class Slide
   constructor: (@config) ->
     @parent = document.getElementById @config.id
     @title_node = document.createElement 'div'
     @title_node.className = 'slide-title'
     @title_node.innerHTML = @config.title || 'slide'
-    @node = document.createElement 'div'
-    @node.className = 'slide'
+    @slide_node = document.createElement 'div'
+    @slide_node.className = 'slide'
     @children = []
     @current_number = -1
-    @total_count = 0
+    @length = 0
     for child in @parent.children
       if child
         page = new Page unless page
@@ -22,35 +143,12 @@ class Slide
         child.style.display = 'none'
     @add page
     @parent.appendChild @title_node
-    @parent.appendChild @node
+    @parent.appendChild @slide_node
 
     @control_node = document.createElement 'div'
     @control_node.className = 'control'
 
-    _slide = @
-    @previous_page_node = document.createElement 'div'
-    @previous_page_node.className = 'previous-page'
-    @previous_page_node.innerHTML = '《'
-    @previous_page_node.onclick = -> _slide.previous_page()
-    @control_node.appendChild @previous_page_node
-
-    @previous_fragment_node = document.createElement 'div'
-    @previous_fragment_node.className = 'previous-fragment'
-    @previous_fragment_node.innerHTML = '&lt;'
-    @previous_fragment_node.onclick = -> _slide.previous_fragment()
-    @control_node.appendChild @previous_fragment_node
-
-    @next_fragment_node = document.createElement 'div'
-    @next_fragment_node.className = 'next-fragment'
-    @next_fragment_node.innerHTML = '&gt;'
-    @next_fragment_node.onclick = -> _slide.next_fragment()
-    @control_node.appendChild @next_fragment_node
-
-    @next_page_node = document.createElement 'div'
-    @next_page_node.className = 'next-page'
-    @next_page_node.innerHTML = '》'
-    @next_page_node.onclick = -> _slide.next_page()
-    @control_node.appendChild @next_page_node
+    new Action(@control_node, @, action) for action in ACTIONS
 
     @progress_bar_node = document.createElement 'div'
     @progress_bar_node.className = 'progress-bar'
@@ -74,103 +172,26 @@ class Slide
     @page_info_node.appendChild @delimiter
     @total_page = document.createElement 'span'
     @total_page.className = 'total_page'
-    @total_page.innerHTML = @total_count
+    @total_page.innerHTML = @length
     @page_info_node.appendChild @total_page
     @control_node.appendChild @page_info_node
 
-    @full_screen_node = document.createElement 'div'
-    @full_screen_node.className = 'full-screen'
-    @full_screen_node.innerHTML = '□'
-    @full_screen_node.onclick = ->
-      request = (_slide.parent.requestFullScreen || _slide.parent.mozRequestFullScreen || _slide.parent.webkitRequestFullScreen)
-      request.call(_slide.parent) if request
-    @control_node.appendChild @full_screen_node
-
     @parent.appendChild @control_node
-    @set_current_number(1) if @total_count isnt 0
+    @set_current_number(1) if @length isnt 0
+    @children[0].show() if @length > 0
 
   add: (page) ->
     if page
       @children.push page
-      @node.appendChild page.node
+      @slide_node.appendChild page.node
       @current_number = 1
-      @total_count = @children.length
-
-  run: ->
-    _slide = @
-    if document.body.addEventListener
-      window.addEventListener('keyup', (event) ->
-        switch event.keyCode
-          when 39 then _slide.next_page()
-          when 37 then _slide.previous_page()
-          when 32, 40 then _slide.next_fragment()
-          when 38 then _slide.previous_fragment() 
-      )
-    else
-      document.body.attachEvent('onkeyup', (event) ->
-        switch event.keyCode
-          when 39 then _slide.next_page()
-          when 37 then _slide.previous_page()
-          when 32, 40 then _slide.next_fragment()
-          when 38 then _slide.previous_fragment() 
-      )
-    @children[0].show() if @total_count > 0
+      @length = @children.length
 
   set_current_number: (value) ->
     @current_number = value
     @current_page_node.innerHTML = value
-    if @total_count isnt 0
-      @progress_inner.style.width = "#{@current_number / @total_count * 100}%"
-
-  next_page: ->
-    if 1 <= @current_number < @total_count
-      if @children[@current_number - 1].is_end()
-        @children[@current_number - 1].hide()
-        @set_current_number(@current_number + 1)
-        @children[@current_number - 1].show()
-      else
-        @children[@current_number - 1].show() 
-    else if @current_number is @total_count && config.cycle
-      if @children[@current_number - 1].is_end()
-        @children[@current_number - 1].hide()
-        @set_current_number(1)
-        @children[@current_number - 1].show()
-      else
-        @children[@current_number - 1].show()
-
-  previous_page: ->
-    if 1 < @current_number <= @total_count
-      @children[@current_number - 1].hide()
-      @set_current_number(@current_number - 1)
-      @children[@current_number - 1].show()
-    else if @current_number is 1 && config.cycle
-      @children[@current_number - 1].hide()
-      @current_number = @total_count
-      @children[@current_number - 1].show()
-
-  next_fragment: ->
-    if @current_number is @total_count && @children[@current_number - 1].is_end() && config.cycle
-      @children[@current_number - 1].hide()
-      @set_current_number(1)
-      @children[@current_number - 1].show()
-    else if 1 <= @current_number < @total_count && @children[@current_number - 1].is_end()
-      @children[@current_number - 1].hide()
-      @set_current_number(@current_number + 1)
-      @children[@current_number - 1].next()
-    else if 1 <= @current_number <= @total_count
-      @children[@current_number - 1].next()
-
-  previous_fragment: ->
-    if @current_number is 1 && @children[@current_number - 1].is_first() && config.cycle
-      @children[@current_number - 1].hide()
-      @set_current_number(@total_count)
-      @children[@current_number - 1].show()
-    else if 1 < @current_number <= @total_count && @children[@current_number - 1].is_first()
-      @children[@current_number - 1].hide()
-      @set_current_number(@current_number - 1)
-      @children[@current_number - 1].show()
-    else if 1 <= @current_number <= @total_count
-      @children[@current_number - 1].previous()
+    if @length isnt 0
+      @progress_inner.style.width = "#{@current_number / @length * 100}%"   
 
 class Page
   constructor: ->
@@ -228,6 +249,4 @@ config =
   cycle: true
   title: '幻灯片Demo'
 
-window.onload = ->
-  slide = new Slide config
-  slide.run()  
+window.onload = -> new Slide config 
