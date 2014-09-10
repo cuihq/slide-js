@@ -4,13 +4,27 @@ body {
   margin: 0 auto;
 }
 
-/* line 6, ../scss/slide-js.scss */
+/* line 5, ../scss/slide-js.scss */
+.slide-title {
+  background: #f0f0f0;
+  background: #f0f0f0 linear-gradient(#f0f0f0, #dddddd);
+  padding: 10px;
+  border-width: 1px 1px 0px 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px 10px 0px 0px;
+  box-shadow: inset rgba(255, 255, 255, 0.2) 0 1px 0;
+  color: #666666;
+  text-shadow: #000 0 1px 0;
+  font-size: 2em;
+}
+
+/* line 18, ../scss/slide-js.scss */
 .slide {
   display: block;
   min-height: 500px;
   padding: 40px 60px;
   border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   color: #666666;
   text-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
@@ -18,9 +32,65 @@ body {
   line-height: 36px;
   letter-spacing: -1px;
   background-color: white;
+  border-width: 1px 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.3);
 }
 
-/* line 21, ../scss/slide-js.scss */
+/* line 34, ../scss/slide-js.scss */
+.control {
+  height: 35px;
+  background: #f0f0f0;
+  background: #f0f0f0 linear-gradient(#f0f0f0, #dddddd);
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.3);
+  border-radius: 0px 0px 10px 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #666666;
+  font-size: 25px;
+  text-shadow: #000 0 1px 0;
+}
+/* line 46, ../scss/slide-js.scss */
+.control .previous-page, .control .next-fragment, .control .previous-fragment, .control .next-page, .control .full-screen {
+  height: 35px;
+  float: left;
+  padding: 0px 10px 0px 10px;
+  cursor: pointer;
+}
+/* line 52, ../scss/slide-js.scss */
+.control .page-info {
+  float: left;
+  height: 35px;
+  padding: 0px 10px 0px 10px;
+}
+/* line 57, ../scss/slide-js.scss */
+.control .progress-bar {
+  height: 35px;
+  float: left;
+  padding: 14px 0;
+}
+/* line 61, ../scss/slide-js.scss */
+.control .progress-bar .progress-outer {
+  width: 680px;
+  height: 6px;
+  padding: 1px;
+  background: #666666;
+  background: #666666 linear-gradient(#666666, #000000);
+  border-radius: 4px;
+  box-shadow: #000000 0 1px 0, #666666 0 -1px 0;
+}
+/* line 69, ../scss/slide-js.scss */
+.control .progress-bar .progress-outer .progress-inner {
+  height: 6px;
+  width: 10px;
+  min-width: 10px;
+  border-radius: 3px;
+  background: #33af33;
+  background: #33af33 linear-gradient(#88b038, #33af33);
+}
+
+/* line 80, ../scss/slide-js.scss */
 body {
   background: radial-gradient(#f0f0f0, #bebebe);
 }

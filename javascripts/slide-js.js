@@ -2,19 +2,110 @@
 (function() {
   var Fragment, Page, Slide, config;
 
-  config = {
-    id: 'content',
-    cycle: true
-  };
-
   Slide = (function() {
-    function Slide(parent) {
-      this.parent = parent;
+    function Slide(config) {
+      var child, fragment, page, _i, _len, _ref, _slide;
+      this.config = config;
+      this.parent = document.getElementById(this.config.id);
+      this.title_node = document.createElement('div');
+      this.title_node.className = 'slide-title';
+      this.title_node.innerHTML = this.config.title || 'slide';
       this.node = document.createElement('div');
       this.node.className = 'slide';
       this.children = [];
       this.current_number = -1;
       this.total_count = 0;
+      _ref = this.parent.children;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        if (child) {
+          if (!page) {
+            page = new Page;
+          }
+          if (child.tagName === 'hr'.toUpperCase()) {
+            this.add(page);
+            page = new Page;
+          } else {
+            fragment = new Fragment(page);
+            fragment.add(child.cloneNode(true));
+            page.add(fragment);
+          }
+          child.style.display = 'none';
+        }
+      }
+      this.add(page);
+      this.parent.appendChild(this.title_node);
+      this.parent.appendChild(this.node);
+      this.control_node = document.createElement('div');
+      this.control_node.className = 'control';
+      _slide = this;
+      this.previous_page_node = document.createElement('div');
+      this.previous_page_node.className = 'previous-page';
+      this.previous_page_node.innerHTML = '《';
+      this.previous_page_node.onclick = function() {
+        return _slide.previous_page();
+      };
+      this.control_node.appendChild(this.previous_page_node);
+      this.previous_fragment_node = document.createElement('div');
+      this.previous_fragment_node.className = 'previous-fragment';
+      this.previous_fragment_node.innerHTML = '&lt;';
+      this.previous_fragment_node.onclick = function() {
+        return _slide.previous_fragment();
+      };
+      this.control_node.appendChild(this.previous_fragment_node);
+      this.next_fragment_node = document.createElement('div');
+      this.next_fragment_node.className = 'next-fragment';
+      this.next_fragment_node.innerHTML = '&gt;';
+      this.next_fragment_node.onclick = function() {
+        return _slide.next_fragment();
+      };
+      this.control_node.appendChild(this.next_fragment_node);
+      this.next_page_node = document.createElement('div');
+      this.next_page_node.className = 'next-page';
+      this.next_page_node.innerHTML = '》';
+      this.next_page_node.onclick = function() {
+        return _slide.next_page();
+      };
+      this.control_node.appendChild(this.next_page_node);
+      this.progress_bar_node = document.createElement('div');
+      this.progress_bar_node.className = 'progress-bar';
+      this.progress_outer_node = document.createElement('div');
+      this.progress_outer_node.className = 'progress-outer';
+      this.progress_bar_node.appendChild(this.progress_outer_node);
+      this.progress_inner = document.createElement('div');
+      this.progress_inner.className = 'progress-inner';
+      this.progress_outer_node.appendChild(this.progress_inner);
+      this.control_node.appendChild(this.progress_bar_node);
+      this.page_info_node = document.createElement('div');
+      this.page_info_node.className = 'page-info';
+      this.current_page_node = document.createElement('span');
+      this.current_page_node.className = 'current-page';
+      this.current_page_node.innerHTML = this.current_number;
+      this.page_info_node.appendChild(this.current_page_node);
+      this.delimiter = document.createElement('span');
+      this.delimiter.className = 'delimiter';
+      this.delimiter.innerHTML = '/';
+      this.page_info_node.appendChild(this.delimiter);
+      this.total_page = document.createElement('span');
+      this.total_page.className = 'total_page';
+      this.total_page.innerHTML = this.total_count;
+      this.page_info_node.appendChild(this.total_page);
+      this.control_node.appendChild(this.page_info_node);
+      this.full_screen_node = document.createElement('div');
+      this.full_screen_node.className = 'full-screen';
+      this.full_screen_node.innerHTML = '□';
+      this.full_screen_node.onclick = function() {
+        var request;
+        request = _slide.parent.requestFullScreen || _slide.parent.mozRequestFullScreen || _slide.parent.webkitRequestFullScreen;
+        if (request) {
+          return request.call(_slide.parent);
+        }
+      };
+      this.control_node.appendChild(this.full_screen_node);
+      this.parent.appendChild(this.control_node);
+      if (this.total_count !== 0) {
+        this.set_current_number(1);
+      }
     }
 
     Slide.prototype.add = function(page) {
@@ -28,7 +119,6 @@
 
     Slide.prototype.run = function() {
       var _slide;
-      this.parent.appendChild(this.node);
       _slide = this;
       if (document.body.addEventListener) {
         window.addEventListener('keyup', function(event) {
@@ -64,12 +154,20 @@
       }
     };
 
+    Slide.prototype.set_current_number = function(value) {
+      this.current_number = value;
+      this.current_page_node.innerHTML = value;
+      if (this.total_count !== 0) {
+        return this.progress_inner.style.width = "" + (this.current_number / this.total_count * 100) + "%";
+      }
+    };
+
     Slide.prototype.next_page = function() {
       var _ref;
       if ((1 <= (_ref = this.current_number) && _ref < this.total_count)) {
         if (this.children[this.current_number - 1].is_end()) {
           this.children[this.current_number - 1].hide();
-          this.current_number += 1;
+          this.set_current_number(this.current_number + 1);
           return this.children[this.current_number - 1].show();
         } else {
           return this.children[this.current_number - 1].show();
@@ -77,7 +175,7 @@
       } else if (this.current_number === this.total_count && config.cycle) {
         if (this.children[this.current_number - 1].is_end()) {
           this.children[this.current_number - 1].hide();
-          this.current_number = 1;
+          this.set_current_number(1);
           return this.children[this.current_number - 1].show();
         } else {
           return this.children[this.current_number - 1].show();
@@ -89,7 +187,7 @@
       var _ref;
       if ((1 < (_ref = this.current_number) && _ref <= this.total_count)) {
         this.children[this.current_number - 1].hide();
-        this.current_number -= 1;
+        this.set_current_number(this.current_number - 1);
         return this.children[this.current_number - 1].show();
       } else if (this.current_number === 1 && config.cycle) {
         this.children[this.current_number - 1].hide();
@@ -102,11 +200,11 @@
       var _ref, _ref1;
       if (this.current_number === this.total_count && this.children[this.current_number - 1].is_end() && config.cycle) {
         this.children[this.current_number - 1].hide();
-        this.current_number = 1;
+        this.set_current_number(1);
         return this.children[this.current_number - 1].show();
       } else if ((1 <= (_ref = this.current_number) && _ref < this.total_count) && this.children[this.current_number - 1].is_end()) {
         this.children[this.current_number - 1].hide();
-        this.current_number += 1;
+        this.set_current_number(this.current_number + 1);
         return this.children[this.current_number - 1].next();
       } else if ((1 <= (_ref1 = this.current_number) && _ref1 <= this.total_count)) {
         return this.children[this.current_number - 1].next();
@@ -117,11 +215,11 @@
       var _ref, _ref1;
       if (this.current_number === 1 && this.children[this.current_number - 1].is_first() && config.cycle) {
         this.children[this.current_number - 1].hide();
-        this.current_number = this.total_count;
+        this.set_current_number(this.total_count);
         return this.children[this.current_number - 1].show();
       } else if ((1 < (_ref = this.current_number) && _ref <= this.total_count) && this.children[this.current_number - 1].is_first()) {
         this.children[this.current_number - 1].hide();
-        this.current_number -= 1;
+        this.set_current_number(this.current_number - 1);
         return this.children[this.current_number - 1].show();
       } else if ((1 <= (_ref1 = this.current_number) && _ref1 <= this.total_count)) {
         return this.children[this.current_number - 1].previous();
@@ -222,29 +320,15 @@
 
   })();
 
+  config = {
+    id: 'content',
+    cycle: true,
+    title: '幻灯片Demo'
+  };
+
   window.onload = function() {
-    var child, content, fragment, page, slide, _i, _len, _ref;
-    content = document.getElementById(config.id);
-    slide = new Slide(content);
-    _ref = content.children;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      child = _ref[_i];
-      if (child) {
-        if (!page) {
-          page = new Page;
-        }
-        if (child.tagName === 'hr'.toUpperCase()) {
-          slide.add(page);
-          page = new Page;
-        } else {
-          fragment = new Fragment(page);
-          fragment.add(child.cloneNode(true));
-          page.add(fragment);
-        }
-        child.style.display = 'none';
-      }
-    }
-    slide.add(page);
+    var slide;
+    slide = new Slide(config);
     return slide.run();
   };
 
