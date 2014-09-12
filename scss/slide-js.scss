@@ -2,19 +2,6 @@ body {
   max-width: 90%;
   margin: 0 auto;
 }
-.slide-title {
-  background: #f0f0f0;
-  background: #f0f0f0 linear-gradient(#f0f0f0, #dddddd);
-  padding: 10px;
-  border-width: 1px 1px 0px 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.3);
-  border-radius: 10px 10px 0px 0px;
-  box-shadow: inset rgba(255,255,255,0.2) 0 1px 0;
-  color: rgb(102, 102, 102);
-  text-shadow: #000 0 1px 0;
-  font-size: 2em;
-}
 .slide {
   display: block;
   width: auto;
@@ -25,7 +12,17 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   text-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   background-color: rgb(255, 255, 255);
-  border-width: 1px 1px;
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.3);
+}
+.control {
+  display: block;
+  width: auto;
+  height: 30px;
+  overflow: hidden;
+  background-color: rgb(255, 255, 255);
+  border-width: 0px 1px 0 1px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.3);
 }
@@ -52,55 +49,35 @@ body {
     }
   }
 }
-.control {
-  height: 47px;
-  background: #f0f0f0;
-  background: #f0f0f0 linear-gradient(#f0f0f0, #dddddd);
-  border-width: 0px 1px 1px 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.3);
-  border-radius: 0px 0px 10px 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  color: #666666;
-  font-size: 25px;
-  text-shadow: #000 0 1px 0;
-  .control-action {
-    height: 35px;
-    width: 35px;
-    padding: 0px;
-    margin: 6px;
-    cursor: pointer;
-  }
-  .page-info {
-    float: right;
-    height: 35px;
-    margin: 6px;
-    padding: 0px 10px 0px 10px;
-  }
+.control-action {
+  cursor: pointer;
+  float: left;
+  margin: 6px;
+}
+.page-info {
+  float: right;
+  height: 30px;
+  margin: 6px;
+  padding: 0px 10px 0px 10px;
 }
 .full-screen {
   width: 100%;
   height: 100%;
-  .slide-title {
-    width: auto;
-  }
   .slide {
     width: auto;
     height: 100%;
   }
   .progress-bar {
     position: fixed;
-    z-index: 100;
-    bottom: 47px;
+    bottom: 0;
     left: 0;
     right: 0; 
   }
   .control {
-    position: fixed;
+    position:absolute;
+    width: 100%;
+    bottom: 10px;
     z-index: 100;
-    bottom: 0;
-    left: 0;
-    right: 0; 
   }
 }
 body {

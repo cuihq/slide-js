@@ -5,21 +5,6 @@ body {
 }
 
 /* line 5, ../scss/slide-js.scss */
-.slide-title {
-  background: #f0f0f0;
-  background: #f0f0f0 linear-gradient(#f0f0f0, #dddddd);
-  padding: 10px;
-  border-width: 1px 1px 0px 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.3);
-  border-radius: 10px 10px 0px 0px;
-  box-shadow: inset rgba(255, 255, 255, 0.2) 0 1px 0;
-  color: #666666;
-  text-shadow: #000 0 1px 0;
-  font-size: 2em;
-}
-
-/* line 18, ../scss/slide-js.scss */
 .slide {
   display: block;
   width: auto;
@@ -30,12 +15,24 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   text-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   background-color: white;
-  border-width: 1px 1px;
+  border-width: 1px 1px 0 1px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.3);
 }
 
-/* line 32, ../scss/slide-js.scss */
+/* line 19, ../scss/slide-js.scss */
+.control {
+  display: block;
+  width: auto;
+  height: 30px;
+  overflow: hidden;
+  background-color: white;
+  border-width: 0px 1px 0 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+/* line 29, ../scss/slide-js.scss */
 .progress-bar {
   height: auto;
   padding: 0;
@@ -43,7 +40,7 @@ body {
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.3);
 }
-/* line 38, ../scss/slide-js.scss */
+/* line 35, ../scss/slide-js.scss */
 .progress-bar .progress-outer {
   width: auto;
   height: 6px;
@@ -52,7 +49,7 @@ body {
   background: #666666 linear-gradient(#666666, #000000);
   box-shadow: #000000 0 1px 0, #666666 0 -1px 0;
 }
-/* line 45, ../scss/slide-js.scss */
+/* line 42, ../scss/slide-js.scss */
 .progress-bar .progress-outer .progress-inner {
   height: 6px;
   width: 10px;
@@ -62,68 +59,47 @@ body {
   background: #33af33 linear-gradient(#88b038, #33af33);
 }
 
-/* line 55, ../scss/slide-js.scss */
-.control {
-  height: 47px;
-  background: #f0f0f0;
-  background: #f0f0f0 linear-gradient(#f0f0f0, #dddddd);
-  border-width: 0px 1px 1px 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.3);
-  border-radius: 0px 0px 10px 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  color: #666666;
-  font-size: 25px;
-  text-shadow: #000 0 1px 0;
-}
-/* line 67, ../scss/slide-js.scss */
-.control .control-action {
-  height: 35px;
-  width: 35px;
-  padding: 0px;
-  margin: 6px;
+/* line 52, ../scss/slide-js.scss */
+.control-action {
   cursor: pointer;
+  float: left;
+  margin: 6px;
 }
-/* line 74, ../scss/slide-js.scss */
-.control .page-info {
+
+/* line 57, ../scss/slide-js.scss */
+.page-info {
   float: right;
-  height: 35px;
+  height: 30px;
   margin: 6px;
   padding: 0px 10px 0px 10px;
 }
 
-/* line 81, ../scss/slide-js.scss */
+/* line 63, ../scss/slide-js.scss */
 .full-screen {
   width: 100%;
   height: 100%;
 }
-/* line 84, ../scss/slide-js.scss */
-.full-screen .slide-title {
-  width: auto;
-}
-/* line 87, ../scss/slide-js.scss */
+/* line 66, ../scss/slide-js.scss */
 .full-screen .slide {
   width: auto;
   height: 100%;
 }
-/* line 91, ../scss/slide-js.scss */
+/* line 70, ../scss/slide-js.scss */
 .full-screen .progress-bar {
   position: fixed;
-  z-index: 100;
-  bottom: 47px;
-  left: 0;
-  right: 0;
-}
-/* line 98, ../scss/slide-js.scss */
-.full-screen .control {
-  position: fixed;
-  z-index: 100;
   bottom: 0;
   left: 0;
   right: 0;
 }
+/* line 76, ../scss/slide-js.scss */
+.full-screen .control {
+  position: absolute;
+  width: 100%;
+  bottom: 10px;
+  z-index: 100;
+}
 
-/* line 106, ../scss/slide-js.scss */
+/* line 83, ../scss/slide-js.scss */
 body {
   background: radial-gradient(#f0f0f0, #bebebe);
 }

@@ -6,9 +6,8 @@
     {
       cls: 'previous-page-action',
       val: '《',
-      key: 37,
       title: '上一页',
-      run: function(slide) {
+      mouse_down: function(slide, event) {
         var _ref;
         if ((1 < (_ref = slide.current_number) && _ref <= slide.length)) {
           slide.children[slide.current_number - 1].hide();
@@ -19,13 +18,26 @@
           slide.current_number = slide.length;
           return slide.children[slide.current_number - 1].show();
         }
+      },
+      key_up: function(slide, event) {
+        var _ref;
+        if (event.keyCode === 37) {
+          if ((1 < (_ref = slide.current_number) && _ref <= slide.length)) {
+            slide.children[slide.current_number - 1].hide();
+            slide.set_current_number(slide.current_number - 1);
+            return slide.children[slide.current_number - 1].show();
+          } else if (slide.current_number === 1 && config.cycle) {
+            slide.children[slide.current_number - 1].hide();
+            slide.current_number = slide.length;
+            return slide.children[slide.current_number - 1].show();
+          }
+        }
       }
     }, {
       cls: 'previous-fragment-action',
       val: '&lt;',
-      key: 38,
       title: '上一段',
-      run: function(slide) {
+      mouse_down: function(slide, event) {
         var _ref, _ref1;
         if (slide.current_number === 1 && slide.children[slide.current_number - 1].is_first() && config.cycle) {
           slide.children[slide.current_number - 1].hide();
@@ -38,13 +50,28 @@
         } else if ((1 <= (_ref1 = slide.current_number) && _ref1 <= slide.length)) {
           return slide.children[slide.current_number - 1].previous();
         }
+      },
+      key_up: function(slide, event) {
+        var _ref, _ref1;
+        if (event.keyCode === 38) {
+          if (slide.current_number === 1 && slide.children[slide.current_number - 1].is_first() && config.cycle) {
+            slide.children[slide.current_number - 1].hide();
+            slide.set_current_number(slide.length);
+            return slide.children[slide.current_number - 1].show();
+          } else if ((1 < (_ref = slide.current_number) && _ref <= slide.length) && slide.children[slide.current_number - 1].is_first()) {
+            slide.children[slide.current_number - 1].hide();
+            slide.set_current_number(slide.current_number - 1);
+            return slide.children[slide.current_number - 1].show();
+          } else if ((1 <= (_ref1 = slide.current_number) && _ref1 <= slide.length)) {
+            return slide.children[slide.current_number - 1].previous();
+          }
+        }
       }
     }, {
       cls: 'next-fragment-action',
       val: '&gt;',
-      key: 40,
       title: '下一段',
-      run: function(slide) {
+      mouse_down: function(slide, event) {
         var _ref, _ref1;
         if (slide.current_number === slide.length && slide.children[slide.current_number - 1].is_end() && config.cycle) {
           slide.children[slide.current_number - 1].hide();
@@ -57,13 +84,28 @@
         } else if ((1 <= (_ref1 = slide.current_number) && _ref1 <= slide.length)) {
           return slide.children[slide.current_number - 1].next();
         }
+      },
+      key_up: function(slide, event) {
+        var _ref, _ref1;
+        if (event.keyCode === 40) {
+          if (slide.current_number === slide.length && slide.children[slide.current_number - 1].is_end() && config.cycle) {
+            slide.children[slide.current_number - 1].hide();
+            slide.set_current_number(1);
+            return slide.children[slide.current_number - 1].show();
+          } else if ((1 <= (_ref = slide.current_number) && _ref < slide.length) && slide.children[slide.current_number - 1].is_end()) {
+            slide.children[slide.current_number - 1].hide();
+            slide.set_current_number(slide.current_number + 1);
+            return slide.children[slide.current_number - 1].next();
+          } else if ((1 <= (_ref1 = slide.current_number) && _ref1 <= slide.length)) {
+            return slide.children[slide.current_number - 1].next();
+          }
+        }
       }
     }, {
       cls: 'next-page-action',
       val: '》',
-      key: 39,
       title: '下一页',
-      run: function(slide) {
+      mouse_down: function(slide, event) {
         var _ref;
         if ((1 <= (_ref = slide.current_number) && _ref < slide.length)) {
           if (slide.children[slide.current_number - 1].is_end()) {
@@ -82,38 +124,52 @@
             return slide.children[slide.current_number - 1].show();
           }
         }
+      },
+      key_up: function(slide, event) {
+        var _ref;
+        if (event.keyCode === 39) {
+          if ((1 <= (_ref = slide.current_number) && _ref < slide.length)) {
+            if (slide.children[slide.current_number - 1].is_end()) {
+              slide.children[slide.current_number - 1].hide();
+              slide.set_current_number(slide.current_number + 1);
+              return slide.children[slide.current_number - 1].show();
+            } else {
+              return slide.children[slide.current_number - 1].show();
+            }
+          } else if (slide.current_number === slide.length && config.cycle) {
+            if (slide.children[slide.current_number - 1].is_end()) {
+              slide.children[slide.current_number - 1].hide();
+              slide.set_current_number(1);
+              return slide.children[slide.current_number - 1].show();
+            } else {
+              return slide.children[slide.current_number - 1].show();
+            }
+          }
+        }
       }
     }, {
       cls: 'full-screen-action',
       val: '□',
-      key: 122,
       title: '全屏',
       init: function(slide) {
+        var listener_name, _i, _len, _ref, _results;
         if (document.addEventListener) {
-          document.addEventListener('fullscreenchange', function(event) {
-            if (document.webkitCurrentFullScreenElement) {
-              return slide.parent.classList.add('full-screen');
-            } else {
-              return slide.parent.classList.remove('full-screen');
-            }
-          });
-          document.addEventListener('webkitfullscreenchange', function(event) {
-            if (document.webkitCurrentFullScreenElement) {
-              return slide.parent.classList.add('full-screen');
-            } else {
-              return slide.parent.classList.remove('full-screen');
-            }
-          });
-          return document.addEventListener('mozfullscreenchange', function(event) {
-            if (document.webkitCurrentFullScreenElement) {
-              return slide.parent.classList.add('full-screen');
-            } else {
-              return slide.parent.classList.remove('full-screen');
-            }
-          });
+          _ref = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange'];
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            listener_name = _ref[_i];
+            _results.push(document.addEventListener(listener_name, function(event) {
+              if (document.webkitCurrentFullScreenElement) {
+                return slide.parent.classList.add('full-screen');
+              } else {
+                return slide.parent.classList.remove('full-screen');
+              }
+            }));
+          }
+          return _results;
         }
       },
-      run: function(slide) {
+      mouse_down: function(slide, event) {
         var request;
         if (document.webkitCurrentFullScreenElement) {
           request = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || document.exitFullscreen;
@@ -133,29 +189,33 @@
   Action = (function() {
     function Action(parent, slide, config) {
       var node;
-      node = document.createElement('button');
-      node.className = 'control-action ' + config.cls;
+      node = document.createElement('div');
+      if (config.cls) {
+        node.className = 'control-action ' + config.cls;
+      } else {
+        node.className = 'control-action';
+      }
       if (config.val) {
         node.innerHTML = config.val;
       }
       if (config.title) {
         node.setAttribute('title', config.title);
       }
-      node.onclick = function() {
-        return config.run(slide);
+      node.onclick = function(event) {
+        if (config.mouse_down) {
+          return config.mouse_down(slide, event);
+        }
       };
-      if (document.addEventListener) {
-        document.addEventListener('keyup', function(event) {
-          if (config.key === event.keyCode) {
-            return config.run(slide);
-          }
-        });
-      } else {
-        document.attachEvent('onkeyup', function(event) {
-          if (config.key === event.keyCode) {
-            return config.run(slide);
-          }
-        });
+      if (config.key_up) {
+        if (document.addEventListener) {
+          document.addEventListener('keyup', function(event) {
+            return config.key_up(slide, event);
+          });
+        } else {
+          document.attachEvent('onkeyup', function(event) {
+            return config.Key_up(slide, event);
+          });
+        }
       }
       parent.appendChild(node);
       if (config.init) {
@@ -172,9 +232,6 @@
       var action, child, fragment, page, _i, _j, _len, _len1, _ref;
       this.config = config;
       this.parent = document.getElementById(this.config.id);
-      this.title_node = document.createElement('div');
-      this.title_node.className = 'slide-title';
-      this.title_node.innerHTML = this.config.title || 'slide';
       this.slide_node = document.createElement('div');
       this.slide_node.className = 'slide';
       this.children = [];
@@ -183,23 +240,20 @@
       _ref = this.parent.children;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
-        if (child) {
-          if (!page) {
-            page = new Page;
-          }
-          if (child.tagName === 'hr'.toUpperCase()) {
-            this.add(page);
-            page = new Page;
-          } else {
-            fragment = new Fragment(page);
-            fragment.add(child.cloneNode(true));
-            page.add(fragment);
-          }
-          child.style.display = 'none';
+        if (!page) {
+          page = new Page;
         }
+        if (child.tagName === 'hr'.toUpperCase()) {
+          this.add(page);
+          page = new Page;
+        } else {
+          fragment = new Fragment(page);
+          fragment.add(child.cloneNode(true));
+          page.add(fragment);
+        }
+        child.style.display = 'none';
       }
       this.add(page);
-      this.parent.appendChild(this.title_node);
       this.parent.appendChild(this.slide_node);
       this.control_node = document.createElement('div');
       this.control_node.className = 'control';
@@ -207,15 +261,6 @@
         action = ACTIONS[_j];
         new Action(this.control_node, this, action);
       }
-      this.progress_bar_node = document.createElement('div');
-      this.progress_bar_node.className = 'progress-bar';
-      this.progress_outer_node = document.createElement('div');
-      this.progress_outer_node.className = 'progress-outer';
-      this.progress_bar_node.appendChild(this.progress_outer_node);
-      this.progress_inner = document.createElement('div');
-      this.progress_inner.className = 'progress-inner';
-      this.progress_outer_node.appendChild(this.progress_inner);
-      this.parent.appendChild(this.progress_bar_node);
       this.page_info_node = document.createElement('div');
       this.page_info_node.className = 'page-info';
       this.current_page_node = document.createElement('span');
@@ -232,6 +277,15 @@
       this.page_info_node.appendChild(this.total_page);
       this.control_node.appendChild(this.page_info_node);
       this.parent.appendChild(this.control_node);
+      this.progress_bar_node = document.createElement('div');
+      this.progress_bar_node.className = 'progress-bar';
+      this.progress_outer_node = document.createElement('div');
+      this.progress_outer_node.className = 'progress-outer';
+      this.progress_bar_node.appendChild(this.progress_outer_node);
+      this.progress_inner = document.createElement('div');
+      this.progress_inner.className = 'progress-inner';
+      this.progress_outer_node.appendChild(this.progress_inner);
+      this.parent.appendChild(this.progress_bar_node);
       if (this.length !== 0) {
         this.set_current_number(1);
       }

@@ -9,156 +9,20 @@
   <body>
     <h1>幻灯片Demo</h1>
     <div id='content'>
-      <h1>网页的图标</h1>
-      
-      <p>网页中图标是图片的一种，但有标识含义，且尺寸较小。
-      效果如下：</p>
-      
-      <blockquote>
-      <p><img src="/favicon.ico" alt="图标" title="替代文字">文字</p>
-      </blockquote>
-      
-      <h2>使用方法</h2>
-      
-      <ol>
-      <li>html</li>
-      <li>css</li>
-      <li>inline image</li>
-      <li>sprite image</li>
-      <li>icon fonts</li>
-      <li>其它</li>
-      </ol>
+      <h1>第一页</h1>
+      <p>第一页第一段内容</p>
+      <p>第一页第二段内容</p>
+      <p>第一页第三段内容</p>
       <hr>
-      <h2>1. html</h2>
-      <p>这是最简单的一种形式。</p>
-      
-      <table><thead>
-      <tr>
-      <th>优点</th>
-      <th>缺点</th>
-      </tr>
-      </thead><tbody>
-      <tr>
-      <td>简单、直接、粗暴</td>
-      <td>不符合表现与内容分开的原则</td>
-      </tr>
-      </tbody></table>
-      
-      <p>例子：</p>
-      <pre class="highlight html"><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"/favicon.ico"</span><span class="nt">&gt;</span>文字</pre>
+      <h1>第二页</h1>
+      <p>第二页第一段内容</p>
+      <p>第二页第二段内容</p>
+      <p>第二页第三段内容</p>
       <hr>
-      <h2>2. CSS</h2>
-      
-      <p>这是最常用的一种形式。</p>
-      
-      <table><thead>
-      <tr>
-      <th>优点</th>
-      <th>缺点</th>
-      </tr>
-      </thead><tbody>
-      <tr>
-      <td>可控制图标的更多的显示样式</td>
-      <td>不够直观</td>
-      </tr>
-      </tbody></table>
-      
-      <p>例子：</p>
-      <pre class="highlight html"><span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">'icon'</span><span class="nt">&gt;&lt;/span&gt;</span>文字</pre>
-      <pre class="highlight css"><span class="nc">.icon</span> <span class="p">{</span>&#x000A;  <span class="nl">display</span><span class="p">:</span> <span class="n">inline-block</span><span class="p">;</span>&#x000A;  <span class="nl">background</span><span class="p">:</span> <span class="sx">url(/favicon.ico)</span> <span class="nb">no-repeat</span><span class="p">;</span>&#x000A;  <span class="nl">width</span><span class="p">:</span> <span class="m">32px</span><span class="p">;</span>&#x000A;  <span class="nl">height</span><span class="p">:</span> <span class="m">32px</span><span class="p">;</span>&#x000A;<span class="p">}</span></pre>
-      <hr>
-      <h2>3. inline image</h2>
-      
-      <p>根据<a href="http://tools.ietf.org/html/rfc2397">RFC 2397</a>标准，inline image的格式如下:</p>
-      
-      <blockquote>
-      <p>data:[&lt;mediatype&gt;][;base64],&lt;data&gt;</p>
-      </blockquote>
-      
-      <table><thead>
-      <tr>
-      <th>优点</th>
-      <th>缺点</th>
-      </tr>
-      </thead><tbody>
-      <tr>
-      <td>减少HTTP请求</td>
-      <td>可维护性，可读性，兼容性差</td>
-      </tr>
-      </tbody></table>
-      
-      <p>例1:</p>
-      <pre class="highlight html"><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"data:image/x-icon;base64,AAABAAEAICA..."</span> <span class="nt">/&gt;</span></pre>
-      
-      <p>例2：</p>
-      <pre class="highlight css"><span class="nc">.icon</span> <span class="p">{</span>&#x000A;  <span class="nl">width</span><span class="p">:</span><span class="m">32px</span><span class="p">;</span>&#x000A;  <span class="nl">height</span><span class="p">:</span><span class="m">32px</span><span class="p">;</span>&#x000A;  <span class="nl">background-image</span><span class="p">:</span> <span class="sx">url(data:image/x-icon;base64,AAABAAEAICA...)</span><span class="p">;</span>&#x000A;<span class="p">}</span></pre>
-      
-      <h3>资源和工具</h3>
-      
-      <p><a href="http://websemantics.co.uk/online_tools/image_to_data_uri_convertor/">websemantics</a>, 免费在线图片转换</p>
-      <hr>
-      <h2>4. sprint image</h2>
-      
-      <p>将多个图标合成一个图片，并用CSS控制。</p>
-      
-      <table><thead>
-      <tr>
-      <th>优点</th>
-      <th>缺点</th>
-      </tr>
-      </thead><tbody>
-      <tr>
-      <td>减少HTTP请求</td>
-      <td>放大光标失真</td>
-      </tr>
-      </tbody></table>
-      
-      <h3>例子：</h3>
-      <pre class="highlight css"><span class="nc">.icons-adduser</span><span class="o">,</span> <span class="nc">.icons-delete</span> <span class="p">{</span>&#x000A;  <span class="nl">background</span><span class="p">:</span> <span class="sx">url('/icons.png')</span> <span class="nb">no-repeat</span><span class="p">;</span>&#x000A;<span class="p">}</span>&#x000A;&#x000A;<span class="nc">.icons-adduser</span> <span class="p">{</span>&#x000A;  <span class="nl">background-position</span><span class="p">:</span> <span class="m">0</span> <span class="m">0</span><span class="p">;</span>&#x000A;<span class="p">}</span>&#x000A;&#x000A;<span class="nc">.icons-delete</span> <span class="p">{</span>&#x000A;  <span class="nl">background-position</span><span class="p">:</span> <span class="m">0</span> <span class="m">-16px</span><span class="p">;</span>&#x000A;<span class="p">}</span></pre>
-      
-      <p>合成图标如下:</p>
-      
-      <blockquote>
-      <p><img src="/icons.png" alt="合成图标" title="合成图标"></p>
-      </blockquote>
-      
-      <h3>资源和工具</h3>
-      
-      <p><a href="http://compass-style.org/help/tutorials/spriting/">compass</a>, 进行合成图片的一种方法</p>
-      <hr>
-      <h2>5. icon fonts</h2>
-      
-      <p>将图标编码成字体，并使用CSS进行控制。</p>
-      
-      <table><thead>
-      <tr>
-      <th>优点</th>
-      <th>缺点</th>
-      </tr>
-      </thead><tbody>
-      <tr>
-      <td>灵活，方便，减少HTTP请求</td>
-      <td>不支持彩色图片</td>
-      </tr>
-      </tbody></table>
-      
-      <h3>例子：</h3>
-      <pre class="highlight css"><span class="k">@font-face</span> <span class="p">{</span>&#x000A;  <span class="nl">font-family</span><span class="p">:</span> <span class="s1">"font-icon"</span><span class="p">;</span>&#x000A;  <span class="nl">src</span><span class="p">:</span> <span class="sx">url("/font-icon.woff")</span><span class="p">;</span>&#x000A;<span class="p">}</span>&#x000A;<span class="nc">.search</span><span class="nd">:before</span> <span class="p">{</span>&#x000A;  <span class="nl">content</span><span class="p">:</span> <span class="s1">"s"</span><span class="p">;</span>&#x000A;  <span class="nl">display</span><span class="p">:</span> <span class="nb">block</span><span class="p">;</span>&#x000A;  <span class="nl">font-family</span><span class="p">:</span> <span class="n">font-icon</span><span class="p">;</span>&#x000A;<span class="p">}</span></pre>
-      <pre class="highlight html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"search"</span><span class="nt">&gt;</span>搜索<span class="nt">&lt;/div&gt;</span></pre>
-      
-      <h3>资源和工具：</h3>
-      
-      <p><a href="http://www.fontsquirrel.com/">fontsquirrel</a>，有一些免费字体图标</p>
-      
-      <p><a href="http://www.high-logic.com/">FontCreator</a>，可制作自定义字体图标</p>
-      <hr>
-      <h2>6. 其它</h2>
-      
-      <ul>
-      <li>图标的形式还有很多，如CSS图标</li>
-      <li>没有最好的图标，只有最适用的图标</li>
-      <li>如需转载，请注明出处，并格式化相关代码与注释</li>
-      </ul>
+      <h1>第三页</h1>
+      <p>第三页第一段内容</p>
+      <p>第三页第二段内容</p>
+      <p>第三页第三段内容</p>
     </div>
     <h1>使用上下左右箭头和空格控制</h1>
   </body>

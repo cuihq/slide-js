@@ -1,10 +1,9 @@
 ACTIONS = [
-  { 
-    cls: 'previous-page-action',    
-    val: '《' ,
-    key: 37,
+  {
+    cls: 'previous-page-action'   
+    val: '《'
     title: '上一页'  
-    run: (slide) ->
+    mouse_down: (slide, event) ->
       if 1 < slide.current_number <= slide.length
         slide.children[slide.current_number - 1].hide()
         slide.set_current_number(slide.current_number - 1)
@@ -13,13 +12,22 @@ ACTIONS = [
         slide.children[slide.current_number - 1].hide()
         slide.current_number = slide.length
         slide.children[slide.current_number - 1].show()
+    key_up: (slide, event) ->
+      if event.keyCode is 37
+        if 1 < slide.current_number <= slide.length
+          slide.children[slide.current_number - 1].hide()
+          slide.set_current_number(slide.current_number - 1)
+          slide.children[slide.current_number - 1].show()
+        else if slide.current_number is 1 && config.cycle
+          slide.children[slide.current_number - 1].hide()
+          slide.current_number = slide.length
+          slide.children[slide.current_number - 1].show()
   },
   { 
-    cls: 'previous-fragment-action', 
-    val: '&lt;',
-    key: 38,
+    cls: 'previous-fragment-action'
+    val: '&lt;'
     title: '上一段'
-    run: (slide) ->
+    mouse_down: (slide, event) ->
       if slide.current_number is 1 && slide.children[slide.current_number - 1].is_first() && config.cycle
         slide.children[slide.current_number - 1].hide()
         slide.set_current_number(slide.length)
@@ -30,13 +38,24 @@ ACTIONS = [
         slide.children[slide.current_number - 1].show()
       else if 1 <= slide.current_number <= slide.length
         slide.children[slide.current_number - 1].previous()
+    key_up: (slide, event) ->
+      if event.keyCode is 38
+        if slide.current_number is 1 && slide.children[slide.current_number - 1].is_first() && config.cycle
+          slide.children[slide.current_number - 1].hide()
+          slide.set_current_number(slide.length)
+          slide.children[slide.current_number - 1].show()
+        else if 1 < slide.current_number <= slide.length && slide.children[slide.current_number - 1].is_first()
+          slide.children[slide.current_number - 1].hide()
+          slide.set_current_number(slide.current_number - 1)
+          slide.children[slide.current_number - 1].show()
+        else if 1 <= slide.current_number <= slide.length
+          slide.children[slide.current_number - 1].previous()
   },
   {     
-    cls: 'next-fragment-action',    
-    val: '&gt;',
-    key: 40, 
+    cls: 'next-fragment-action'    
+    val: '&gt;'
     title: '下一段'
-    run: (slide) ->
+    mouse_down: (slide, event) ->
       if slide.current_number is slide.length && slide.children[slide.current_number - 1].is_end() && config.cycle
         slide.children[slide.current_number - 1].hide()
         slide.set_current_number(1)
@@ -46,14 +65,25 @@ ACTIONS = [
         slide.set_current_number(slide.current_number + 1)
         slide.children[slide.current_number - 1].next()
       else if 1 <= slide.current_number <= slide.length
-        slide.children[slide.current_number - 1].next() 
+        slide.children[slide.current_number - 1].next()
+    key_up: (slide, event) ->
+      if event.keyCode is 40
+        if slide.current_number is slide.length && slide.children[slide.current_number - 1].is_end() && config.cycle
+          slide.children[slide.current_number - 1].hide()
+          slide.set_current_number(1)
+          slide.children[slide.current_number - 1].show()
+        else if 1 <= slide.current_number < slide.length && slide.children[slide.current_number - 1].is_end()
+          slide.children[slide.current_number - 1].hide()
+          slide.set_current_number(slide.current_number + 1)
+          slide.children[slide.current_number - 1].next()
+        else if 1 <= slide.current_number <= slide.length
+          slide.children[slide.current_number - 1].next() 
   },
   {      
-    cls: 'next-page-action',     
-    val: '》',
-    key: 39, 
+    cls: 'next-page-action'    
+    val: '》' 
     title: '下一页' 
-    run: (slide) ->
+    mouse_down: (slide, event) ->
       if 1 <= slide.current_number < slide.length
         if slide.children[slide.current_number - 1].is_end()
           slide.children[slide.current_number - 1].hide()
@@ -68,33 +98,37 @@ ACTIONS = [
           slide.children[slide.current_number - 1].show()
         else
           slide.children[slide.current_number - 1].show()
+    key_up: (slide, event) ->
+      if event.keyCode is 39
+        if 1 <= slide.current_number < slide.length
+          if slide.children[slide.current_number - 1].is_end()
+            slide.children[slide.current_number - 1].hide()
+            slide.set_current_number(slide.current_number + 1)
+            slide.children[slide.current_number - 1].show()
+          else
+            slide.children[slide.current_number - 1].show() 
+        else if slide.current_number is slide.length && config.cycle
+          if slide.children[slide.current_number - 1].is_end()
+            slide.children[slide.current_number - 1].hide()
+            slide.set_current_number(1)
+            slide.children[slide.current_number - 1].show()
+          else
+            slide.children[slide.current_number - 1].show()
   },
   {
     cls: 'full-screen-action',
     val: '□',
-    key: 122,
     title: '全屏'
     init: (slide) ->
       if document.addEventListener
-        document.addEventListener('fullscreenchange', (event) -> 
-          if document.webkitCurrentFullScreenElement 
-            slide.parent.classList.add('full-screen')
-          else
-            slide.parent.classList.remove('full-screen')
-        )
-        document.addEventListener('webkitfullscreenchange', (event) ->  
-          if document.webkitCurrentFullScreenElement 
-            slide.parent.classList.add('full-screen')
-          else
-            slide.parent.classList.remove('full-screen')
-        )
-        document.addEventListener('mozfullscreenchange', (event) ->  
-          if document.webkitCurrentFullScreenElement 
-            slide.parent.classList.add('full-screen')
-          else
-            slide.parent.classList.remove('full-screen')
-        )
-    run: (slide) ->
+        for listener_name in ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange']
+          document.addEventListener(listener_name, (event) -> 
+            if document.webkitCurrentFullScreenElement 
+              slide.parent.classList.add('full-screen')
+            else
+              slide.parent.classList.remove('full-screen')
+          )
+    mouse_down: (slide, event) ->
       if document.webkitCurrentFullScreenElement
         request = (document.cancelFullScreen|| document.webkitCancelFullScreen|| document.mozCancelFullScreen|| document.exitFullscreen)
         request.call(document) if request   
@@ -106,15 +140,19 @@ ACTIONS = [
 
 class Action
   constructor: (parent, slide, config) ->
-    node = document.createElement 'button'
-    node.className = 'control-action ' + config.cls
+    node = document.createElement 'div'
+    if config.cls
+      node.className = 'control-action ' + config.cls
+    else
+      node.className = 'control-action'
     node.innerHTML = config.val if config.val
     node.setAttribute('title', config.title) if config.title
-    node.onclick = -> config.run(slide)
-    if document.addEventListener
-      document.addEventListener('keyup', (event) -> config.run(slide) if config.key is event.keyCode)
-    else
-      document.attachEvent('onkeyup', (event) -> config.run(slide) if config.key is event.keyCode )
+    node.onclick = (event) -> config.mouse_down(slide, event) if config.mouse_down
+    if config.key_up
+      if document.addEventListener
+        document.addEventListener('keyup', (event) -> config.key_up(slide, event))
+      else
+        document.attachEvent('onkeyup', (event) -> config.Key_up(slide, event))
     parent.appendChild node
     config.init(slide) if config.init
 
@@ -122,43 +160,28 @@ class Action
 class Slide
   constructor: (@config) ->
     @parent = document.getElementById @config.id
-    @title_node = document.createElement 'div'
-    @title_node.className = 'slide-title'
-    @title_node.innerHTML = @config.title || 'slide'
     @slide_node = document.createElement 'div'
     @slide_node.className = 'slide'
     @children = []
     @current_number = -1
     @length = 0
     for child in @parent.children
-      if child
-        page = new Page unless page
-        if child.tagName is 'hr'.toUpperCase()
-          @add page
-          page = new Page
-        else
-          fragment = new Fragment page
-          fragment.add child.cloneNode(true)
-          page.add fragment
-        child.style.display = 'none'
+      page = new Page unless page
+      if child.tagName is 'hr'.toUpperCase()
+        @add page
+        page = new Page
+      else
+        fragment = new Fragment page
+        fragment.add child.cloneNode(true)
+        page.add fragment
+      child.style.display = 'none'
     @add page
-    @parent.appendChild @title_node
     @parent.appendChild @slide_node
 
     @control_node = document.createElement 'div'
     @control_node.className = 'control'
 
     new Action(@control_node, @, action) for action in ACTIONS
-
-    @progress_bar_node = document.createElement 'div'
-    @progress_bar_node.className = 'progress-bar'
-    @progress_outer_node = document.createElement 'div'
-    @progress_outer_node.className = 'progress-outer'
-    @progress_bar_node.appendChild @progress_outer_node
-    @progress_inner = document.createElement 'div'
-    @progress_inner.className = 'progress-inner'
-    @progress_outer_node.appendChild @progress_inner
-    @parent.appendChild @progress_bar_node
 
     @page_info_node = document.createElement 'div'
     @page_info_node.className = 'page-info'
@@ -175,8 +198,18 @@ class Slide
     @total_page.innerHTML = @length
     @page_info_node.appendChild @total_page
     @control_node.appendChild @page_info_node
-
     @parent.appendChild @control_node
+
+    @progress_bar_node = document.createElement 'div'
+    @progress_bar_node.className = 'progress-bar'
+    @progress_outer_node = document.createElement 'div'
+    @progress_outer_node.className = 'progress-outer'
+    @progress_bar_node.appendChild @progress_outer_node
+    @progress_inner = document.createElement 'div'
+    @progress_inner.className = 'progress-inner'
+    @progress_outer_node.appendChild @progress_inner
+    @parent.appendChild @progress_bar_node
+
     @set_current_number(1) if @length isnt 0
     @children[0].show() if @length > 0
 
