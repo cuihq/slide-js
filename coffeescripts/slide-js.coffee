@@ -26,11 +26,10 @@ class Slide
     @node = document.getElementById @config.id
     @show = new Show(@)
     @control = new Control(@)
-    @page_info = @control.page_info
     @progress_bar = new ProgressBar(@)
 
   update_status: ->
-    @page_info.update_status() if @page_info
+    @control.update_status() if @control
     @progress_bar.update_status() if @progress_bar
 
 class Show
@@ -52,7 +51,7 @@ class Show
       child.style.display = 'none'
     @add page
     @slide.node.appendChild @node
-    @set_index(0) if @length isnt 0
+    @index = 0 if @length isnt 0
 
   add: (page) ->
     if page
@@ -61,59 +60,61 @@ class Show
       @slide.index = 0
       @length = @children.length
 
-  set_index: (value) ->
-    @index = value
-    @slide.update_status()
-
   next_page: ->
     if 0 <= @index < @length - 1
       if @children[@index].is_end()
         @children[@index].hide()
-        @set_index(@index + 1)
+        @index = @index + 1
         @children[@index].show()
       else
         @children[@index].show() 
     else if @index is @length - 1 && @slide.config.cycle
       if @children[@index].is_end()
         @children[@index].hide()
-        @set_index(0)
+        @index = 0
         @children[@index].show()
       else
         @children[@index].show()
+    @slide.update_status()
 
   previous_page: ->
     if 0 < @index < @length
       @children[@index].hide()
-      @set_index(@index - 1)
+      @index = @index - 1
       @children[@index].show()
     else if @index is 0 && @slide.config.cycle
       @children[@index].hide()
-      @set_index(@length - 1)
+      @index = @length - 1
       @children[@index].show()
+    @slide.update_status()
 
   next_fragment: ->
-    if @index is @length - 1 && @children[@index].is_end() && @slide.config.cycle
-      @children[@index].hide()
-      @set_index(0)
-      @children[@index].show()
+    if @index is @length - 1 && @children[@index].is_end()
+      if @slide.config.cycle
+        @children[@index].hide()
+        @index = 0
+        @children[@index].next()
     else if 0 <= @index < @length && @children[@index].is_end()
       @children[@index].hide()
-      @set_index(@index + 1)
+      @index = @index + 1
       @children[@index].next()
     else if 0 <= @index < @length
       @children[@index].next()
+    @slide.update_status()
 
   previous_fragment: ->
-    if @index is 0 && @children[@index].is_first() && @slide.config.cycle
-      @children[@index].hide()
-      @set_index(@length - 1)
-      @children[@index].show()
+    if @index is 0 && @children[@index].is_first()
+      if @slide.config.cycle
+        @children[@index].hide()
+        @index = @length - 1
+        @children[@index].show()
     else if 0 <= @index < @length && @children[@index].is_first()
       @children[@index].hide()
-      @set_index(@index - 1)
+      @index = @index - 1
       @children[@index].show()
     else if 0 <= @index < @length
       @children[@index].previous()
+    @slide.update_status()
 
 class Page
   constructor: ->
@@ -127,31 +128,30 @@ class Page
     if fragment
       @children.push fragment
       @node.appendChild fragment.node
-      @index = 0
       @total_count = @children.length
 
-  is_end: -> @index is @total_count
+  is_end: -> @index is @total_count - 1
 
-  is_first: -> @index is 1
+  is_first: -> @index is 0
 
   next: ->
     index = @index + 1
-    if 1 <= index <= @total_count
-      @children[index - 1].show()
+    if 0 <= index < @total_count
+      @children[index].show()
       @index = index
 
   previous: ->
-    if 1 <= @index <= @total_count
-      @children[@index - 1].hide()
+    if 0 <= @index < @total_count
+      @children[@index].hide()
       @index = @index - 1
 
   show: ->
-    @children[i - 1].show() for i in [1..@total_count]
-    @index = @total_count
+    @children[i].show() for i in [0..@total_count-1]
+    @index = @total_count - 1
 
   hide: ->
-    @children[i - 1].hide() for i in [1..@total_count]
-    @index = 0 if @total_count > 0
+    @children[i].hide() for i in [0..@total_count-1]
+    @index = -1 if @total_count > 0
 
 class Fragment
   constructor: ->
@@ -159,8 +159,7 @@ class Fragment
     @node.className = 'fragment'
     @hide()
 
-  add: (text) ->
-    @node.appendChild text if text
+  add: (text) -> @node.appendChild text if text
 
   show: -> @node.style.display = ''
 
@@ -178,6 +177,14 @@ class Control
     @page_info = new PageInfo(@slide, @)
     @slide.node.appendChild @node
 
+  update_status: ->
+    @previous_page.update_status() if @previous_page
+    @previous_fragment.update_status() if @previous_fragment
+    @next_fragment.update_status() if @next_fragment
+    @next_page.update_status() if @next_page
+    @full_screen.update_status() if @full_screen
+    @page_info.update_status() if @page_info
+
 class Button
   constructor: (@slide, @parent) ->
     @show = @slide.show
@@ -194,14 +201,14 @@ class Button
       else
         document.attachEvent('onkeyup', (event) -> _button.key_up(_button, event))
     @parent.node.appendChild @node
-    @init() if @init
+    @init(_button) if @init
 
   mouse_down: (button, event) -> button.run(button, event)
 
   key_up: (button, event) -> button.run(button, event) if button.keyCode && event.keyCode is button.keyCode
 
 class PreviousPageButton extends Button
-  init: ->
+  init: (button)->
     @node.className = 'control-action previous-page-action'
     @node.innerHTML = '《'
     @node.setAttribute('title', '上一页')
@@ -213,8 +220,10 @@ class PreviousPageButton extends Button
 
   run: (button, event) -> button.slide.show.previous_page()
 
+  update_status: ->
+
 class PreviousFragmentButton extends Button
-  init: ->
+  init: (button)->
     @node.className = 'control-action previous-fragment-action'
     @node.innerHTML = '&lt;'
     @node.setAttribute('title', '上一段')
@@ -222,8 +231,10 @@ class PreviousFragmentButton extends Button
   
   run: (button, event) -> button.slide.show.previous_fragment()
 
+  update_status: ->
+
 class NextFragmentButton extends Button
-  init: ->
+  init: (button)->
     @node.className = 'control-action next-fragment-action'
     @node.innerHTML = '&gt;'
     @node.setAttribute('title', '下一段')
@@ -231,8 +242,10 @@ class NextFragmentButton extends Button
 
   run: (button, event) -> button.slide.show.next_fragment()
 
+  update_status: ->
+
 class NextPageButton extends Button
-  init: ->
+  init: (button)->
     @node.className = 'control-action next-page-action'
     @node.innerHTML = '》'
     @node.setAttribute('title', '下一页')
@@ -243,8 +256,12 @@ class NextPageButton extends Button
 
   run: (button, event) -> button.slide.show.next_page()
 
+  update_status: -> 
+    # if @slide.config.cycle || @slide.show.index isnt @slide.show.length
+    #   @node.style.display = 'none'
+
 class FullScreenButton extends Button
-  init: ->
+  init: (button)->
     @node.className = 'control-action full-screen-action'
     @node.innerHTML = '□'
     @node.setAttribute('title', '全屏')
@@ -252,9 +269,9 @@ class FullScreenButton extends Button
       for listener_name in ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange']
         document.addEventListener(listener_name, (event) -> 
           if document.webkitCurrentFullScreenElement 
-            slide.parent.classList.add('full-screen')
+            button.slide.node.classList.add('full-screen')
           else
-            slide.parent.classList.remove('full-screen')
+            button.slide.node.classList.remove('full-screen')
         )
 
   run: (button, event) ->
@@ -262,8 +279,11 @@ class FullScreenButton extends Button
       request = (document.cancelFullScreen|| document.webkitCancelFullScreen|| document.mozCancelFullScreen|| document.exitFullscreen)
       request.call(document) if request   
     else
-      request = (slide.parent.requestFullScreen || slide.parent.mozRequestFullScreen || slide.parent.webkitRequestFullScreen || slide.parent.msRequestFullScreen)
-      request.call(slide.parent) if request
+      node = button.slide.node
+      request = (node.requestFullScreen || node.mozRequestFullScreen || node.webkitRequestFullScreen || node.msRequestFullScreen)
+      request.call(node) if request
+
+  update_status: ->
 
 class PageInfo
   constructor: (@slide, @parent) ->
@@ -300,4 +320,4 @@ class ProgressBar
 
   update_status: -> @inner_node.style.width = "#{ (@slide.show.index + 1) / @slide.show.length * 100}%" if @slide.show.length isnt -1
 
-window.onload = -> new Slide {id: 'content', cycle: true}
+window.onload = -> new Slide {id: 'content', cycle: false}

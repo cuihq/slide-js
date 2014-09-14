@@ -10,13 +10,12 @@
       this.node = document.getElementById(this.config.id);
       this.show = new Show(this);
       this.control = new Control(this);
-      this.page_info = this.control.page_info;
       this.progress_bar = new ProgressBar(this);
     }
 
     Slide.prototype.update_status = function() {
-      if (this.page_info) {
-        this.page_info.update_status();
+      if (this.control) {
+        this.control.update_status();
       }
       if (this.progress_bar) {
         return this.progress_bar.update_status();
@@ -55,7 +54,7 @@
       this.add(page);
       this.slide.node.appendChild(this.node);
       if (this.length !== 0) {
-        this.set_index(0);
+        this.index = 0;
       }
     }
 
@@ -68,73 +67,76 @@
       }
     };
 
-    Show.prototype.set_index = function(value) {
-      this.index = value;
-      return this.slide.update_status();
-    };
-
     Show.prototype.next_page = function() {
       var _ref;
       if ((0 <= (_ref = this.index) && _ref < this.length - 1)) {
         if (this.children[this.index].is_end()) {
           this.children[this.index].hide();
-          this.set_index(this.index + 1);
-          return this.children[this.index].show();
+          this.index = this.index + 1;
+          this.children[this.index].show();
         } else {
-          return this.children[this.index].show();
+          this.children[this.index].show();
         }
       } else if (this.index === this.length - 1 && this.slide.config.cycle) {
         if (this.children[this.index].is_end()) {
           this.children[this.index].hide();
-          this.set_index(0);
-          return this.children[this.index].show();
+          this.index = 0;
+          this.children[this.index].show();
         } else {
-          return this.children[this.index].show();
+          this.children[this.index].show();
         }
       }
+      return this.slide.update_status();
     };
 
     Show.prototype.previous_page = function() {
       var _ref;
       if ((0 < (_ref = this.index) && _ref < this.length)) {
         this.children[this.index].hide();
-        this.set_index(this.index - 1);
-        return this.children[this.index].show();
+        this.index = this.index - 1;
+        this.children[this.index].show();
       } else if (this.index === 0 && this.slide.config.cycle) {
         this.children[this.index].hide();
-        this.set_index(this.length - 1);
-        return this.children[this.index].show();
+        this.index = this.length - 1;
+        this.children[this.index].show();
       }
+      return this.slide.update_status();
     };
 
     Show.prototype.next_fragment = function() {
       var _ref, _ref1;
-      if (this.index === this.length - 1 && this.children[this.index].is_end() && this.slide.config.cycle) {
-        this.children[this.index].hide();
-        this.set_index(0);
-        return this.children[this.index].show();
+      if (this.index === this.length - 1 && this.children[this.index].is_end()) {
+        if (this.slide.config.cycle) {
+          this.children[this.index].hide();
+          this.index = 0;
+          this.children[this.index].next();
+        }
       } else if ((0 <= (_ref = this.index) && _ref < this.length) && this.children[this.index].is_end()) {
         this.children[this.index].hide();
-        this.set_index(this.index + 1);
-        return this.children[this.index].next();
+        this.index = this.index + 1;
+        this.children[this.index].next();
       } else if ((0 <= (_ref1 = this.index) && _ref1 < this.length)) {
-        return this.children[this.index].next();
+        this.children[this.index].next();
       }
+      return this.slide.update_status();
     };
 
     Show.prototype.previous_fragment = function() {
       var _ref, _ref1;
-      if (this.index === 0 && this.children[this.index].is_first() && this.slide.config.cycle) {
-        this.children[this.index].hide();
-        this.set_index(this.length - 1);
-        return this.children[this.index].show();
+      if (this.index === 0 && this.children[this.index].is_first()) {
+        if (this.slide.config.cycle) {
+          this.children[this.index].hide();
+          this.index = this.length - 1;
+          this.children[this.index].show();
+        }
       } else if ((0 <= (_ref = this.index) && _ref < this.length) && this.children[this.index].is_first()) {
         this.children[this.index].hide();
-        this.set_index(this.index - 1);
-        return this.children[this.index].show();
+        this.index = this.index - 1;
+        this.children[this.index].show();
       } else if ((0 <= (_ref1 = this.index) && _ref1 < this.length)) {
-        return this.children[this.index].previous();
+        this.children[this.index].previous();
       }
+      return this.slide.update_status();
     };
 
     return Show;
@@ -154,51 +156,50 @@
       if (fragment) {
         this.children.push(fragment);
         this.node.appendChild(fragment.node);
-        this.index = 0;
         return this.total_count = this.children.length;
       }
     };
 
     Page.prototype.is_end = function() {
-      return this.index === this.total_count;
+      return this.index === this.total_count - 1;
     };
 
     Page.prototype.is_first = function() {
-      return this.index === 1;
+      return this.index === 0;
     };
 
     Page.prototype.next = function() {
       var index;
       index = this.index + 1;
-      if ((1 <= index && index <= this.total_count)) {
-        this.children[index - 1].show();
+      if ((0 <= index && index < this.total_count)) {
+        this.children[index].show();
         return this.index = index;
       }
     };
 
     Page.prototype.previous = function() {
       var _ref;
-      if ((1 <= (_ref = this.index) && _ref <= this.total_count)) {
-        this.children[this.index - 1].hide();
+      if ((0 <= (_ref = this.index) && _ref < this.total_count)) {
+        this.children[this.index].hide();
         return this.index = this.index - 1;
       }
     };
 
     Page.prototype.show = function() {
       var i, _i, _ref;
-      for (i = _i = 1, _ref = this.total_count; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
-        this.children[i - 1].show();
+      for (i = _i = 0, _ref = this.total_count - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        this.children[i].show();
       }
-      return this.index = this.total_count;
+      return this.index = this.total_count - 1;
     };
 
     Page.prototype.hide = function() {
       var i, _i, _ref;
-      for (i = _i = 1, _ref = this.total_count; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
-        this.children[i - 1].hide();
+      for (i = _i = 0, _ref = this.total_count - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        this.children[i].hide();
       }
       if (this.total_count > 0) {
-        return this.index = 0;
+        return this.index = -1;
       }
     };
 
@@ -245,6 +246,27 @@
       this.slide.node.appendChild(this.node);
     }
 
+    Control.prototype.update_status = function() {
+      if (this.previous_page) {
+        this.previous_page.update_status();
+      }
+      if (this.previous_fragment) {
+        this.previous_fragment.update_status();
+      }
+      if (this.next_fragment) {
+        this.next_fragment.update_status();
+      }
+      if (this.next_page) {
+        this.next_page.update_status();
+      }
+      if (this.full_screen) {
+        this.full_screen.update_status();
+      }
+      if (this.page_info) {
+        return this.page_info.update_status();
+      }
+    };
+
     return Control;
 
   })();
@@ -281,7 +303,7 @@
       }
       this.parent.node.appendChild(this.node);
       if (this.init) {
-        this.init();
+        this.init(_button);
       }
     }
 
@@ -307,7 +329,7 @@
       return _ref;
     }
 
-    PreviousPageButton.prototype.init = function() {
+    PreviousPageButton.prototype.init = function(button) {
       this.node.className = 'control-action previous-page-action';
       this.node.innerHTML = '《';
       this.node.setAttribute('title', '上一页');
@@ -326,6 +348,8 @@
       return button.slide.show.previous_page();
     };
 
+    PreviousPageButton.prototype.update_status = function() {};
+
     return PreviousPageButton;
 
   })(Button);
@@ -338,7 +362,7 @@
       return _ref1;
     }
 
-    PreviousFragmentButton.prototype.init = function() {
+    PreviousFragmentButton.prototype.init = function(button) {
       this.node.className = 'control-action previous-fragment-action';
       this.node.innerHTML = '&lt;';
       this.node.setAttribute('title', '上一段');
@@ -348,6 +372,8 @@
     PreviousFragmentButton.prototype.run = function(button, event) {
       return button.slide.show.previous_fragment();
     };
+
+    PreviousFragmentButton.prototype.update_status = function() {};
 
     return PreviousFragmentButton;
 
@@ -361,7 +387,7 @@
       return _ref2;
     }
 
-    NextFragmentButton.prototype.init = function() {
+    NextFragmentButton.prototype.init = function(button) {
       this.node.className = 'control-action next-fragment-action';
       this.node.innerHTML = '&gt;';
       this.node.setAttribute('title', '下一段');
@@ -371,6 +397,8 @@
     NextFragmentButton.prototype.run = function(button, event) {
       return button.slide.show.next_fragment();
     };
+
+    NextFragmentButton.prototype.update_status = function() {};
 
     return NextFragmentButton;
 
@@ -384,7 +412,7 @@
       return _ref3;
     }
 
-    NextPageButton.prototype.init = function() {
+    NextPageButton.prototype.init = function(button) {
       this.node.className = 'control-action next-page-action';
       this.node.innerHTML = '》';
       this.node.setAttribute('title', '下一页');
@@ -403,6 +431,8 @@
       return button.slide.show.next_page();
     };
 
+    NextPageButton.prototype.update_status = function() {};
+
     return NextPageButton;
 
   })(Button);
@@ -415,7 +445,7 @@
       return _ref4;
     }
 
-    FullScreenButton.prototype.init = function() {
+    FullScreenButton.prototype.init = function(button) {
       var listener_name, _i, _len, _ref5, _results;
       this.node.className = 'control-action full-screen-action';
       this.node.innerHTML = '□';
@@ -427,9 +457,9 @@
           listener_name = _ref5[_i];
           _results.push(document.addEventListener(listener_name, function(event) {
             if (document.webkitCurrentFullScreenElement) {
-              return slide.parent.classList.add('full-screen');
+              return button.slide.node.classList.add('full-screen');
             } else {
-              return slide.parent.classList.remove('full-screen');
+              return button.slide.node.classList.remove('full-screen');
             }
           }));
         }
@@ -438,19 +468,22 @@
     };
 
     FullScreenButton.prototype.run = function(button, event) {
-      var request;
+      var node, request;
       if (document.webkitCurrentFullScreenElement) {
         request = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || document.exitFullscreen;
         if (request) {
           return request.call(document);
         }
       } else {
-        request = slide.parent.requestFullScreen || slide.parent.mozRequestFullScreen || slide.parent.webkitRequestFullScreen || slide.parent.msRequestFullScreen;
+        node = button.slide.node;
+        request = node.requestFullScreen || node.mozRequestFullScreen || node.webkitRequestFullScreen || node.msRequestFullScreen;
         if (request) {
-          return request.call(slide.parent);
+          return request.call(node);
         }
       }
     };
+
+    FullScreenButton.prototype.update_status = function() {};
 
     return FullScreenButton;
 
@@ -512,7 +545,7 @@
   window.onload = function() {
     return new Slide({
       id: 'content',
-      cycle: true
+      cycle: false
     });
   };
 
