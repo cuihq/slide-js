@@ -1,29 +1,38 @@
-####################################################
-#                                                  #
-#  Slide(.sj-slide)                                #
-#                                                  #
-#  ##############################################  #
-#  #                                            #  #
-#  #  Show                                      #  #
-#  #   - Page                                   #  #
-#  #     - Fragment                             #  #
-#  #                                            #  #
-#  ##############################################  #
-#  #                                            #  #
-#  #  Control                                   #  #
-#  #   - Button | Button | Button     PageInfo  #  #
-#  #                                            #  #
-#  ##############################################  #
-#  #                                            #  #
-#  #  ProgressBar                               #  #
-#  #                                            #  #
-#  ##############################################  #
-#                                                  #
-####################################################
+################################################################################################
+#                                                                                              #
+#  Slide                                                                                       #
+#                                                                                              #
+#  ##########################################################################################  #
+#  #                                                                                        #  #
+#  #  Show(.sj-show)                                                                        #  #
+#  #   - Page(.sj-page)                                                                     #  #
+#  #     - Fragment(.sj-fragment)                                                           #  #
+#  #                                                                                        #  #
+#  ##########################################################################################  #
+#  #                                                                                        #  #
+#  #  Control(.sj-control)                                                                  #  #
+#  #   - PreviousPage(.sj-previous-page) | PreviousFragment(.sj-previous-fragment)          #  #
+#  #  | NextFragment(.sj-next-fragmet) | NextPage(.sj-next-page)                            #  #
+#  #  | FullScreen(.sj-full-screen)   PageInfo(.sj-page-info)                               #  #
+#  #                                                                                        #  #
+#  ##########################################################################################  #
+#  #                                                                                        #  #
+#  #  ProgressBar(.sj-progress-bar)                                                         #  #
+#  #                                                                                        #  #
+#  ##########################################################################################  #
+#                                                                                              #
+################################################################################################
+Util =
+  addClass: (elem, className) -> elem.className += ' ' + className
+  removeClass: (elem, className) -> elem.className = elem.className.replace(className, ' ').replace('  ', ' ')
+  addEvent: (elem, event, fn) -> if document.addEventListener then elem.addEventListener(event, fn) else elem.attachEvent('on' + event, fn)
 
 class Slide
   constructor: (@config) ->
-    @node = document.getElementById @config.id
+    @id = @config.id
+    @cycle = @config.cycle || true
+    @break = (@config.break || 'hr').toUpperCase()
+    @node = document.getElementById @id
     @show = new Show(@)
     @control = new Control(@)
     @progress_bar = new ProgressBar(@)
@@ -38,10 +47,10 @@ class Show
     @length = -1
     @children = []
     @node = document.createElement 'div'
-    @node.className = 'slide'
+    @node.className = 'sj-show'
     for child in @slide.node.children
       page = new Page unless page
-      if child.tagName is 'hr'.toUpperCase()
+      if child.tagName is @slide.break
         @add page
         page = new Page
       else
@@ -68,7 +77,7 @@ class Show
         @children[@index].show()
       else
         @children[@index].show() 
-    else if @index is @length - 1 && @slide.config.cycle
+    else if @index is @length - 1 && @slide.cycle
       if @children[@index].is_end()
         @children[@index].hide()
         @index = 0
@@ -82,7 +91,7 @@ class Show
       @children[@index].hide()
       @index = @index - 1
       @children[@index].show()
-    else if @index is 0 && @slide.config.cycle
+    else if @index is 0 && @slide.cycle
       @children[@index].hide()
       @index = @length - 1
       @children[@index].show()
@@ -90,7 +99,7 @@ class Show
 
   next_fragment: ->
     if @index is @length - 1 && @children[@index].is_end()
-      if @slide.config.cycle
+      if @slide.cycle
         @children[@index].hide()
         @index = 0
         @children[@index].next()
@@ -104,7 +113,7 @@ class Show
 
   previous_fragment: ->
     if @index is 0 && @children[@index].is_first()
-      if @slide.config.cycle
+      if @slide.cycle
         @children[@index].hide()
         @index = @length - 1
         @children[@index].show()
@@ -119,7 +128,7 @@ class Show
 class Page
   constructor: ->
     @node = document.createElement 'div'
-    @node.className = 'page'
+    @node.className = 'sj-page'
     @children = []
     @index = -1
     @total_count = 0
@@ -156,7 +165,7 @@ class Page
 class Fragment
   constructor: ->
     @node = document.createElement 'div'
-    @node.className = 'fragment'
+    @node.className = 'sj-fragment'
     @hide()
 
   add: (text) -> @node.appendChild text if text
@@ -168,12 +177,12 @@ class Fragment
 class Control
   constructor: (@slide) ->
     @node = document.createElement 'div'
-    @node.className = 'control'
-    @previous_page = new PreviousPageButton(@slide, @)
-    @previous_fragment = new PreviousFragmentButton(@slide, @)
-    @next_fragment = new NextFragmentButton(@slide, @)
-    @next_page = new NextPageButton(@slide, @)
-    @full_screen = new FullScreenButton(@slide, @)
+    @node.className = 'sj-control'
+    @previous_page = new PreviousPage(@slide, @)
+    @previous_fragment = new PreviousFragment(@slide, @)
+    @next_fragment = new NextFragment(@slide, @)
+    @next_page = new NextPage(@slide, @)
+    @full_screen = new FullScreen(@slide, @)
     @page_info = new PageInfo(@slide, @)
     @slide.node.appendChild @node
 
@@ -189,27 +198,19 @@ class Button
   constructor: (@slide, @parent) ->
     @show = @slide.show
     @node = document.createElement 'div'
-    _button = @
-    if @mouse_down
-      if document.addEventListener
-        @node.addEventListener('mousedown', (event) -> _button.mouse_down(_button, event)) 
-      else
-        @node.attachEvent('onmousedown', (event) -> _button.mouse_down(_button, event))
-    if @key_up
-      if document.addEventListener
-        document.addEventListener('keyup', (event) -> _button.key_up(_button, event))
-      else
-        document.attachEvent('onkeyup', (event) -> _button.key_up(_button, event))
     @parent.node.appendChild @node
+    _button = @
+    Util.addEvent(@node, 'mousedown', (event) -> _button.mouse_down(_button, event)) if @mouse_down
+    Util.addEvent(document, 'keyup', (event) -> _button.key_up(_button, event)) if @key_up
     @init(_button) if @init
 
   mouse_down: (button, event) -> button.run(button, event)
 
   key_up: (button, event) -> button.run(button, event) if button.keyCode && event.keyCode is button.keyCode
 
-class PreviousPageButton extends Button
+class PreviousPage extends Button
   init: (button)->
-    @node.className = 'control-action previous-page-action'
+    @node.className = 'sj-previous-page'
     @node.innerHTML = '《'
     @node.setAttribute('title', '上一页')
     @keyCode = 37
@@ -222,9 +223,9 @@ class PreviousPageButton extends Button
 
   update_status: ->
 
-class PreviousFragmentButton extends Button
+class PreviousFragment extends Button
   init: (button)->
-    @node.className = 'control-action previous-fragment-action'
+    @node.className = 'sj-previous-fragment'
     @node.innerHTML = '&lt;'
     @node.setAttribute('title', '上一段')
     @keyCode = 38
@@ -233,9 +234,9 @@ class PreviousFragmentButton extends Button
 
   update_status: ->
 
-class NextFragmentButton extends Button
+class NextFragment extends Button
   init: (button)->
-    @node.className = 'control-action next-fragment-action'
+    @node.className = 'sj-next-fragmet'
     @node.innerHTML = '&gt;'
     @node.setAttribute('title', '下一段')
     @keyCode = 40
@@ -244,15 +245,15 @@ class NextFragmentButton extends Button
 
   update_status: ->
 
-class NextPageButton extends Button
+class NextPage extends Button
   init: (button)->
-    @node.className = 'control-action next-page-action'
+    @node.className = 'sj-next-page'
     @node.innerHTML = '》'
     @node.setAttribute('title', '下一页')
     @keyCode = 39
 
   visible: (slide) -> slide.length > 0
-  enable: (slide) -> slide.config.cycle || slide.index isnt slide.length
+  enable: (slide) -> slide.cycle || slide.index isnt slide.length
 
   run: (button, event) -> button.slide.show.next_page()
 
@@ -260,20 +261,17 @@ class NextPageButton extends Button
     # if @slide.config.cycle || @slide.show.index isnt @slide.show.length
     #   @node.style.display = 'none'
 
-class FullScreenButton extends Button
+class FullScreen extends Button
   init: (button)->
-    @node.className = 'control-action full-screen-action'
+    @node.className = 'sj-full-screen-button'
     @node.innerHTML = '□'
     @node.setAttribute('title', '全屏')
-    if document.addEventListener
-      for listener_name in ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange']
-        document.addEventListener(listener_name, (event) -> 
-          if document.webkitCurrentFullScreenElement 
-            button.slide.node.classList.add('full-screen')
-          else
-            button.slide.node.classList.remove('full-screen')
-        )
-
+    for listener_name in ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange']
+      Util.addEvent document, listener_name, (event) -> 
+        if document.webkitCurrentFullScreenElement
+          Util.addClass(button.slide.node, 'sj-full-screen') 
+        else
+          Util.removeClass(button.slide.node, 'sj-full-screen') 
   run: (button, event) ->
     if document.webkitCurrentFullScreenElement
       request = (document.cancelFullScreen|| document.webkitCancelFullScreen|| document.mozCancelFullScreen|| document.exitFullscreen)
@@ -288,7 +286,7 @@ class FullScreenButton extends Button
 class PageInfo
   constructor: (@slide, @parent) ->
     @node = document.createElement 'div'
-    @node.className = 'page-info'
+    @node.className = 'sj-page-info'
     @current_page_node = document.createElement 'span'
     @current_page_node.className = 'current-page'
     @current_page_node.innerHTML = @slide.index
@@ -309,15 +307,15 @@ class PageInfo
 class ProgressBar
   constructor: (@slide) ->
     @node = document.createElement 'div'
-    @node.className = 'progress-bar'
+    @node.className = 'sj-progress-bar'
     @outer_node = document.createElement 'div'
-    @outer_node.className = 'progress-outer'
+    @outer_node.className = 'sj-progress-outer'
     @node.appendChild @outer_node
     @inner_node = document.createElement 'div'
-    @inner_node.className = 'progress-inner'
+    @inner_node.className = 'sj-progress-inner'
     @outer_node.appendChild @inner_node
     @slide.node.appendChild @node
 
   update_status: -> @inner_node.style.width = "#{ (@slide.show.index + 1) / @slide.show.length * 100}%" if @slide.show.length isnt -1
 
-window.onload = -> new Slide {id: 'content', cycle: false}
+window.onload = -> new Slide {id: 'content', cycle: false, break: 'hr'}

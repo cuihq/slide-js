@@ -2,10 +2,11 @@
 body {
   max-width: 90%;
   margin: 0 auto;
+  background: radial-gradient(#f0f0f0, #bebebe);
 }
 
-/* line 5, ../scss/slide-js.scss */
-.slide {
+/* line 6, ../scss/slide-js.scss */
+.sj-show {
   display: block;
   width: auto;
   height: 600px;
@@ -20,8 +21,8 @@ body {
   border-color: rgba(0, 0, 0, 0.3);
 }
 
-/* line 19, ../scss/slide-js.scss */
-.control {
+/* line 20, ../scss/slide-js.scss */
+.sj-control {
   display: block;
   width: auto;
   height: 30px;
@@ -31,17 +32,28 @@ body {
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.3);
 }
-
 /* line 29, ../scss/slide-js.scss */
-.progress-bar {
+.sj-control .sj-previous-page, .sj-control .sj-previous-fragment, .sj-control .sj-next-fragmet, .sj-control .sj-next-page, .sj-control .sj-full-screen-button {
+  cursor: pointer;
+  float: left;
+  margin: 6px;
+}
+/* line 34, ../scss/slide-js.scss */
+.sj-control .sj-page-info {
+  float: right;
+  padding: 0px 10px 0px 10px;
+}
+
+/* line 39, ../scss/slide-js.scss */
+.sj-progress-bar {
   height: auto;
   padding: 0;
   border-width: 0px 1px 0px 1px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.3);
 }
-/* line 35, ../scss/slide-js.scss */
-.progress-bar .progress-outer {
+/* line 45, ../scss/slide-js.scss */
+.sj-progress-bar .sj-progress-outer {
   width: auto;
   height: 6px;
   padding: 1px;
@@ -49,8 +61,8 @@ body {
   background: #666666 linear-gradient(#666666, #000000);
   box-shadow: #000000 0 1px 0, #666666 0 -1px 0;
 }
-/* line 42, ../scss/slide-js.scss */
-.progress-bar .progress-outer .progress-inner {
+/* line 52, ../scss/slide-js.scss */
+.sj-progress-bar .sj-progress-outer .sj-progress-inner {
   height: 6px;
   width: 10px;
   min-width: 10px;
@@ -59,47 +71,27 @@ body {
   background: #33af33 linear-gradient(#88b038, #33af33);
 }
 
-/* line 52, ../scss/slide-js.scss */
-.control-action {
-  cursor: pointer;
-  float: left;
-  margin: 6px;
-}
-
-/* line 57, ../scss/slide-js.scss */
-.page-info {
-  float: right;
-  height: 30px;
-  margin: 6px;
-  padding: 0px 10px 0px 10px;
-}
-
-/* line 63, ../scss/slide-js.scss */
-.full-screen {
+/* line 62, ../scss/slide-js.scss */
+.sj-full-screen {
   width: 100%;
   height: 100%;
 }
-/* line 66, ../scss/slide-js.scss */
-.full-screen .slide {
+/* line 65, ../scss/slide-js.scss */
+.sj-full-screen .sj-show {
   width: auto;
   height: 100%;
 }
-/* line 70, ../scss/slide-js.scss */
-.full-screen .progress-bar {
+/* line 69, ../scss/slide-js.scss */
+.sj-full-screen .sj-progress-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
 }
-/* line 76, ../scss/slide-js.scss */
-.full-screen .control {
+/* line 75, ../scss/slide-js.scss */
+.sj-full-screen .sj-control {
   position: absolute;
   width: 100%;
   bottom: 10px;
   z-index: 100;
-}
-
-/* line 83, ../scss/slide-js.scss */
-body {
-  background: radial-gradient(#f0f0f0, #bebebe);
 }
