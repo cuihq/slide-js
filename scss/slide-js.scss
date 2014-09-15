@@ -1,9 +1,12 @@
+@import "compass/css3";
+$button-color: orange;
+$button-active-color: #3c8dde;
 .sj {
+  @include user-select(none);
   .sj-show {
     display: block;
     width: auto;
     overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.3);
     background-color: rgb(255, 255, 255);
     border-width: 1px 1px 0 1px;
     border-style: solid;
@@ -16,15 +19,68 @@
     display: block;
     width: auto;
     height: 30px;
-    overflow: hidden;
     background-color: rgb(255, 255, 255);
     border-width: 0px 1px 0 1px;
     border-style: solid;
     border-color: rgba(0, 0, 0, 0.3);
-    .sj-previous-page-button, .sj-previous-fragment-button, .sj-next-fragmet-button, .sj-next-page-button, .sj-full-screen-button {
+    .sj-previous-page-button, .sj-previous-fragment-button, .sj-next-fragmet-button, .sj-next-page-button {
+      display: block;
       cursor: pointer;
-      float: left;
-      margin: 6px;
+      width: 0;
+      height: 0;
+      position: relative;
+    }
+    .sj-previous-fragment-button {
+      bottom: 60px;
+      border-right: 30px solid $button-color;
+      &:hover, &:focus, &:active {
+        border-right: 30px solid $button-active-color;
+      }
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+    }
+    .sj-previous-page-button {
+      bottom: 60px;
+      left: 30px;
+      border-bottom: 30px solid $button-color;
+      &:hover, &:focus, &:active {
+        border-bottom: 30px solid $button-active-color;
+      } 
+      border-left: 15px solid transparent; 
+      border-right: 15px solid transparent;  
+    }
+    .sj-next-page-button {
+      bottom: 90px;
+      left: 30px;
+      border-top: 30px solid $button-color;
+      &:hover, &:focus, &:active {
+        border-top: 30px solid $button-active-color;
+      }
+      border-left: 15px solid transparent; 
+      border-right: 15px solid transparent;
+    }
+    .sj-next-fragmet-button {
+      bottom: 90px;
+      left: 60px;
+      border-left: 30px solid $button-color;
+      &:hover, &:focus, &:active {
+        border-left: 30px solid $button-active-color;
+      }
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+    }
+    .sj-full-screen-button {
+      display: block;
+      cursor: pointer;
+      position: relative;
+      bottom: 150px;
+      left: 30px;
+      background-color: $button-color;
+      &:hover, &:focus, &:active {
+        background-color: $button-active-color;
+      }
+      width: 30px; 
+      height: 30px;
     }
     .sj-page-info {
       float: right;
@@ -35,33 +91,24 @@
     display: block;
     height: auto;
     padding: 0;
-    border-width: 0px 1px 0px 1px;
+    border-width: 0px 1px 1px 1px;
     border-style: solid;
     border-color: rgba(0, 0, 0, 0.3);
-    .sj-progress-outer {
-      width: auto;
-      height: 6px;
-      padding: 1px;
-      background: #666666;
-      background: #666666 linear-gradient(#666666,#000000);
-      box-shadow: #000000 0 1px 0, #666666 0 -1px 0;
-      .sj-progress-inner {
-        height: 6px;
-        width: 10px;
-        min-width: 10px;
-        border-radius: 3px;
-        background: #33af33;
-        background: #33af33 linear-gradient(#88b038, #33af33);
-      }
+    background-color: rgb(255, 255, 255);
+    .sj-progress-inner {
+      height: 10px;
+      min-width: 10px;
+      background: #33af33;
+      background: #33af33 linear-gradient(#88b038, #33af33);
     }
   }
-}
-.sj-button-disable {
-  background-color: red;
 }
 :-webkit-full-screen {
   width: 100%;
   height: 100%;
+}
+.sj-button-disable {
+ opacity: 0.3;
 }
 .sj-full-screen {
   width: 100%;

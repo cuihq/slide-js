@@ -5,27 +5,27 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Util = {
-    hasClass: function(elem, cls) {
+    has_class: function(elem, cls) {
       return (' ' + elem.className + ' ').indexOf(' ' + cls + ' ') > -1;
     },
-    addClass: function(elem, cls) {
-      if (!this.hasClass(elem, cls)) {
+    add_class: function(elem, cls) {
+      if (!this.has_class(elem, cls)) {
         return elem.className += ' ' + cls;
       }
     },
-    removeClass: function(elem, cls) {
-      if (this.hasClass(elem, cls)) {
+    remove_class: function(elem, cls) {
+      if (this.has_class(elem, cls)) {
         return elem.className = elem.className.replace(cls, ' ').replace('  ', ' ');
       }
     },
-    addEvent: function(elem, event, fn) {
+    add_event: function(elem, event, fn) {
       if (document.addEventListener) {
         return elem.addEventListener(event, fn);
       } else {
         return elem.attachEvent('on' + event, fn);
       }
     },
-    fullScreen: function(elem) {
+    full_screen: function(elem) {
       if (elem == null) {
         elem = document.documentElement;
       }
@@ -38,15 +38,6 @@
       } else if (elem.msRequestFullscreen) {
         return elem.msRequestFullscreen();
       }
-    },
-    cancelFullScreen: function() {
-      if (document.exitFullscreen) {
-        return document.exitFullscreen;
-      } else if (document.mozCancelFullScreen) {
-        return document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        return document.webkitExitFullscreen();
-      }
     }
   };
 
@@ -57,8 +48,10 @@
       this.cycle = this.config.cycle;
       this["break"] = (this.config["break"] || 'hr').toUpperCase();
       this.height = (this.config.height || 600) + 'px';
+      this.rotate = this.config.rotate;
+      this.fade = this.config.fade;
       this.node = document.getElementById(this.id);
-      Util.addClass(this.node, 'sj');
+      Util.add_class(this.node, 'sj');
       this.show = new Show(this);
       this.control = new Control(this);
       this.progress_bar = new ProgressBar(this);
@@ -92,13 +85,13 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
         if (!page) {
-          page = new Page;
+          page = new Page(this.slide);
         }
         if (child.tagName === this.slide["break"]) {
           this.add(page);
-          page = new Page;
+          page = new Page(this.slide);
         } else {
-          fragment = new Fragment(page);
+          fragment = new Fragment(this.slide);
           fragment.add(child.cloneNode(true));
           page.add(fragment);
         }
@@ -213,9 +206,10 @@
   })();
 
   Page = (function() {
-    function Page() {
+    function Page(slide) {
+      this.slide = slide;
       this.node = document.createElement('div');
-      this.node.className = 'sj-page';
+      Util.add_class(this.node, 'sj-page');
       this.children = [];
       this.index = -1;
       this.total_count = 0;
@@ -225,7 +219,8 @@
       if (fragment) {
         this.children.push(fragment);
         this.node.appendChild(fragment.node);
-        return this.total_count = this.children.length;
+        this.total_count = this.children.length;
+        return this.hide();
       }
     };
 
@@ -234,11 +229,12 @@
     };
 
     Page.prototype.is_first = function() {
-      return this.index === 0;
+      return this.index === 0 || this.index === -1;
     };
 
     Page.prototype.next = function() {
       var index;
+      this.node.style.display = 'block';
       index = this.index + 1;
       if ((0 <= index && index < this.total_count)) {
         this.children[index].show();
@@ -256,6 +252,7 @@
 
     Page.prototype.show = function() {
       var i, _i, _ref;
+      this.node.style.display = 'block';
       for (i = _i = 0, _ref = this.total_count - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         this.children[i].show();
       }
@@ -268,8 +265,9 @@
         this.children[i].hide();
       }
       if (this.total_count > 0) {
-        return this.index = -1;
+        this.index = -1;
       }
+      return this.node.style.display = 'none';
     };
 
     return Page;
@@ -277,9 +275,13 @@
   })();
 
   Fragment = (function() {
-    function Fragment() {
+    function Fragment(slide) {
+      this.slide = slide;
       this.node = document.createElement('div');
-      this.node.className = 'sj-fragment';
+      Util.add_class(this.node, 'sj-fragment');
+      if (this.slide.fade) {
+        Util.add_class(this.node, 'sj-fade');
+      }
       this.hide();
     }
 
@@ -290,7 +292,7 @@
     };
 
     Fragment.prototype.show = function() {
-      return this.node.style.display = '';
+      return this.node.style.display = 'block';
     };
 
     Fragment.prototype.hide = function() {
@@ -350,12 +352,12 @@
       this.parent.node.appendChild(this.node);
       _button = this;
       if (this.mouse_down) {
-        Util.addEvent(this.node, 'mousedown', function(event) {
+        Util.add_event(this.node, 'mousedown', function(event) {
           return _button.mouse_down(_button, event);
         });
       }
       if (this.key_up) {
-        Util.addEvent(document, 'keyup', function(event) {
+        Util.add_event(document, 'keyup', function(event) {
           return _button.key_up(_button, event);
         });
       }
@@ -388,7 +390,6 @@
 
     PreviousPage.prototype.init = function(button) {
       this.node.className = 'sj-previous-page-button';
-      this.node.innerHTML = '《';
       this.node.setAttribute('title', '上一页');
       return this.keyCode = 37;
     };
@@ -399,9 +400,9 @@
 
     PreviousPage.prototype.update_status = function() {
       if (!this.slide.cycle && this.slide.show.is_first_page()) {
-        return Util.addClass(this.node, 'sj-button-disable');
+        return Util.add_class(this.node, 'sj-button-disable');
       } else {
-        return Util.removeClass(this.node, 'sj-button-disable');
+        return Util.remove_class(this.node, 'sj-button-disable');
       }
     };
 
@@ -419,7 +420,6 @@
 
     PreviousFragment.prototype.init = function(button) {
       this.node.className = 'sj-previous-fragment-button';
-      this.node.innerHTML = '&lt;';
       this.node.setAttribute('title', '上一段');
       return this.keyCode = 38;
     };
@@ -430,9 +430,9 @@
 
     PreviousFragment.prototype.update_status = function() {
       if (!this.slide.cycle && this.slide.show.is_first_fragment()) {
-        return Util.addClass(this.node, 'sj-button-disable');
+        return Util.add_class(this.node, 'sj-button-disable');
       } else {
-        return Util.removeClass(this.node, 'sj-button-disable');
+        return Util.remove_class(this.node, 'sj-button-disable');
       }
     };
 
@@ -450,7 +450,6 @@
 
     NextFragment.prototype.init = function(button) {
       this.node.className = 'sj-next-fragmet-button';
-      this.node.innerHTML = '&gt;';
       this.node.setAttribute('title', '下一段');
       return this.keyCode = 40;
     };
@@ -461,9 +460,9 @@
 
     NextFragment.prototype.update_status = function() {
       if (!this.slide.cycle && this.slide.show.is_last_fragment()) {
-        return Util.addClass(this.node, 'sj-button-disable');
+        return Util.add_class(this.node, 'sj-button-disable');
       } else {
-        return Util.removeClass(this.node, 'sj-button-disable');
+        return Util.remove_class(this.node, 'sj-button-disable');
       }
     };
 
@@ -481,7 +480,6 @@
 
     NextPage.prototype.init = function(button) {
       this.node.className = 'sj-next-page-button';
-      this.node.innerHTML = '》';
       this.node.setAttribute('title', '下一页');
       return this.keyCode = 39;
     };
@@ -492,9 +490,9 @@
 
     NextPage.prototype.update_status = function() {
       if (!this.slide.cycle && this.slide.show.is_last_page()) {
-        return Util.addClass(this.node, 'sj-button-disable');
+        return Util.add_class(this.node, 'sj-button-disable');
       } else {
-        return Util.removeClass(this.node, 'sj-button-disable');
+        return Util.remove_class(this.node, 'sj-button-disable');
       }
     };
 
@@ -513,18 +511,17 @@
     FullScreen.prototype.init = function(button) {
       var listener_name, _i, _len, _ref5, _results;
       this.node.className = 'sj-full-screen-button';
-      this.node.innerHTML = '□';
       this.node.setAttribute('title', '全屏');
       this.is_full_screen = false;
       _ref5 = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange'];
       _results = [];
       for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
         listener_name = _ref5[_i];
-        _results.push(Util.addEvent(document, listener_name, function(event) {
+        _results.push(Util.add_event(document, listener_name, function(event) {
           if (button.is_full_screen) {
-            Util.addClass(button.slide.node, 'sj-full-screen');
+            Util.add_class(button.slide.node, 'sj-full-screen');
           } else {
-            Util.removeClass(button.slide.node, 'sj-full-screen');
+            Util.remove_class(button.slide.node, 'sj-full-screen');
           }
           return button.is_full_screen = false;
         }));
@@ -533,7 +530,7 @@
     };
 
     FullScreen.prototype.run = function(button, event) {
-      Util.fullScreen(button.slide.show.node);
+      Util.full_screen(button.slide.show.node);
       return this.is_full_screen = true;
     };
 
@@ -577,18 +574,15 @@
       this.slide = slide;
       this.node = document.createElement('div');
       this.node.className = 'sj-progress-bar';
-      this.outer_node = document.createElement('div');
-      this.outer_node.className = 'sj-progress-outer';
-      this.node.appendChild(this.outer_node);
       this.inner_node = document.createElement('div');
       this.inner_node.className = 'sj-progress-inner';
-      this.outer_node.appendChild(this.inner_node);
+      this.node.appendChild(this.inner_node);
       this.slide.node.appendChild(this.node);
     }
 
     ProgressBar.prototype.update_status = function() {
       if (this.slide.show.length !== -1) {
-        return this.inner_node.style.width = "" + ((this.slide.show.index + 1) / this.slide.show.length * 100) + "%";
+        return this.inner_node.style.width = "" + (this.slide.show.index / (this.slide.show.length - 1) * 100) + "%";
       }
     };
 

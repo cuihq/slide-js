@@ -23,11 +23,11 @@
 #                                                                                              #
 ################################################################################################
 Util =
-  hasClass: (elem, cls) -> (' ' + elem.className+ ' ').indexOf(' ' + cls + ' ') > -1
-  addClass: (elem, cls) -> elem.className += ' ' + cls unless @hasClass(elem, cls)
-  removeClass: (elem, cls) -> elem.className = elem.className.replace(cls, ' ').replace('  ', ' ') if @hasClass(elem, cls)
-  addEvent: (elem, event, fn) -> if document.addEventListener then elem.addEventListener(event, fn) else elem.attachEvent('on' + event, fn) 
-  fullScreen: (elem = document.documentElement) ->
+  has_class: (elem, cls) -> (' ' + elem.className+ ' ').indexOf(' ' + cls + ' ') > -1
+  add_class: (elem, cls) -> elem.className += ' ' + cls unless @has_class(elem, cls)
+  remove_class: (elem, cls) -> elem.className = elem.className.replace(cls, ' ').replace('  ', ' ') if @has_class(elem, cls)
+  add_event: (elem, event, fn) -> if document.addEventListener then elem.addEventListener(event, fn) else elem.attachEvent('on' + event, fn) 
+  full_screen: (elem = document.documentElement) ->
     if elem.requestFullscreen
       elem.requestFullscreen()
     else if elem.mozRequestFullScreen
@@ -36,13 +36,6 @@ Util =
       elem.webkitRequestFullscreen()
     else if elem.msRequestFullscreen
       elem.msRequestFullscreen()
-  cancelFullScreen: ->
-    if document.exitFullscreen
-      document.exitFullscreen
-    else if document.mozCancelFullScreen
-      document.mozCancelFullScreen()
-    else if document.webkitExitFullscreen
-      document.webkitExitFullscreen()
 
 class Slide
   constructor: (@config) ->
@@ -50,8 +43,10 @@ class Slide
     @cycle = @config.cycle
     @break = (@config.break || 'hr').toUpperCase()
     @height = (@config.height || 600) + 'px'
+    @rotate = @config.rotate
+    @fade = @config.fade
     @node = document.getElementById @id
-    Util.addClass(@node, 'sj')
+    Util.add_class(@node, 'sj')
     @show = new Show(@)
     @control = new Control(@)
     @progress_bar = new ProgressBar(@)
@@ -70,12 +65,12 @@ class Show
     @node.className = 'sj-show'
     @node.style.height = @slide.height
     for child in @slide.node.children
-      page = new Page unless page
+      page = new Page(@slide) unless page
       if child.tagName is @slide.break
         @add page
-        page = new Page
+        page = new Page @slide
       else
-        fragment = new Fragment page
+        fragment = new Fragment @slide
         fragment.add child.cloneNode(true)
         page.add fragment
       child.style.display = 'none'
@@ -155,9 +150,9 @@ class Show
     @slide.update_status()
 
 class Page
-  constructor: ->
+  constructor: (@slide) ->
     @node = document.createElement 'div'
-    @node.className = 'sj-page'
+    Util.add_class(@node, 'sj-page')
     @children = []
     @index = -1
     @total_count = 0
@@ -167,12 +162,14 @@ class Page
       @children.push fragment
       @node.appendChild fragment.node
       @total_count = @children.length
+      @hide()
 
   is_end: -> @index is @total_count - 1
 
-  is_first: -> @index is 0
+  is_first: -> @index is 0 || @index is -1
 
   next: ->
+    @node.style.display = 'block'
     index = @index + 1
     if 0 <= index < @total_count
       @children[index].show()
@@ -184,22 +181,25 @@ class Page
       @index = @index - 1
 
   show: ->
+    @node.style.display = 'block'
     @children[i].show() for i in [0..@total_count-1]
     @index = @total_count - 1
 
   hide: ->
     @children[i].hide() for i in [0..@total_count-1]
     @index = -1 if @total_count > 0
+    @node.style.display = 'none'
 
 class Fragment
-  constructor: ->
+  constructor: (@slide) ->
     @node = document.createElement 'div'
-    @node.className = 'sj-fragment'
+    Util.add_class(@node, 'sj-fragment')
+    Util.add_class(@node, 'sj-fade') if @slide.fade
     @hide()
 
   add: (text) -> @node.appendChild text if text
 
-  show: -> @node.style.display = ''
+  show: -> @node.style.display = 'block'
 
   hide: -> @node.style.display = 'none'
 
@@ -229,8 +229,8 @@ class Button
     @node = document.createElement 'div'
     @parent.node.appendChild @node
     _button = @
-    Util.addEvent(@node, 'mousedown', (event) -> _button.mouse_down(_button, event)) if @mouse_down
-    Util.addEvent(document, 'keyup', (event) -> _button.key_up(_button, event)) if @key_up
+    Util.add_event(@node, 'mousedown', (event) -> _button.mouse_down(_button, event)) if @mouse_down
+    Util.add_event(document, 'keyup', (event) -> _button.key_up(_button, event)) if @key_up
     @init(_button) if @init
 
   mouse_down: (button, event) -> button.run(button, event)
@@ -240,7 +240,6 @@ class Button
 class PreviousPage extends Button
   init: (button)->
     @node.className = 'sj-previous-page-button'
-    @node.innerHTML = '《'
     @node.setAttribute('title', '上一页')
     @keyCode = 37
 
@@ -248,14 +247,13 @@ class PreviousPage extends Button
 
   update_status: ->
     if not @slide.cycle && @slide.show.is_first_page()
-      Util.addClass(@node, 'sj-button-disable')
+      Util.add_class(@node, 'sj-button-disable')
     else
-      Util.removeClass(@node, 'sj-button-disable')
+      Util.remove_class(@node, 'sj-button-disable')
 
 class PreviousFragment extends Button
   init: (button)->
     @node.className = 'sj-previous-fragment-button'
-    @node.innerHTML = '&lt;'
     @node.setAttribute('title', '上一段')
     @keyCode = 38
   
@@ -263,14 +261,13 @@ class PreviousFragment extends Button
 
   update_status: ->
     if not @slide.cycle && @slide.show.is_first_fragment()
-      Util.addClass(@node, 'sj-button-disable')
+      Util.add_class(@node, 'sj-button-disable')
     else
-      Util.removeClass(@node, 'sj-button-disable')
+      Util.remove_class(@node, 'sj-button-disable')
 
 class NextFragment extends Button
   init: (button)->
     @node.className = 'sj-next-fragmet-button'
-    @node.innerHTML = '&gt;'
     @node.setAttribute('title', '下一段')
     @keyCode = 40
 
@@ -278,14 +275,13 @@ class NextFragment extends Button
 
   update_status: ->
     if not @slide.cycle && @slide.show.is_last_fragment()
-      Util.addClass(@node, 'sj-button-disable')
+      Util.add_class(@node, 'sj-button-disable')
     else
-      Util.removeClass(@node, 'sj-button-disable')
+      Util.remove_class(@node, 'sj-button-disable')
 
 class NextPage extends Button
   init: (button)->
     @node.className = 'sj-next-page-button'
-    @node.innerHTML = '》'
     @node.setAttribute('title', '下一页')
     @keyCode = 39
 
@@ -293,27 +289,26 @@ class NextPage extends Button
 
   update_status: ->
     if not @slide.cycle && @slide.show.is_last_page()
-      Util.addClass(@node, 'sj-button-disable')
+      Util.add_class(@node, 'sj-button-disable')
     else
-      Util.removeClass(@node, 'sj-button-disable')
+      Util.remove_class(@node, 'sj-button-disable')
 
 class FullScreen extends Button
   init: (button)->
     @node.className = 'sj-full-screen-button'
-    @node.innerHTML = '□'
     @node.setAttribute('title', '全屏')
     @is_full_screen = false
     for listener_name in ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange']
-      Util.addEvent(document, listener_name, (event) ->
+      Util.add_event(document, listener_name, (event) ->
         if button.is_full_screen
-          Util.addClass(button.slide.node, 'sj-full-screen')
+          Util.add_class(button.slide.node, 'sj-full-screen')
         else
-          Util.removeClass(button.slide.node, 'sj-full-screen')
+          Util.remove_class(button.slide.node, 'sj-full-screen')
         button.is_full_screen = false
       )
        
   run: (button, event) ->
-    Util.fullScreen(button.slide.show.node)
+    Util.full_screen(button.slide.show.node)
     @is_full_screen = true
 
   update_status: ->
@@ -343,14 +338,11 @@ class ProgressBar
   constructor: (@slide) ->
     @node = document.createElement 'div'
     @node.className = 'sj-progress-bar'
-    @outer_node = document.createElement 'div'
-    @outer_node.className = 'sj-progress-outer'
-    @node.appendChild @outer_node
     @inner_node = document.createElement 'div'
     @inner_node.className = 'sj-progress-inner'
-    @outer_node.appendChild @inner_node
+    @node.appendChild @inner_node
     @slide.node.appendChild @node
 
-  update_status: -> @inner_node.style.width = "#{ (@slide.show.index + 1) / @slide.show.length * 100}%" if @slide.show.length isnt -1
+  update_status: -> @inner_node.style.width = "#{ @slide.show.index / (@slide.show.length - 1) * 100}%" if @slide.show.length isnt -1
 
-window.onload = -> new Slide {id: 'content', cycle: false, break: 'hr', height: 600}
+window.onload = -> new Slide {id: 'content', cycle: false, break: 'hr', height: 600 }
