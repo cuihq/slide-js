@@ -5,17 +5,47 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Util = {
-    addClass: function(elem, className) {
-      return elem.className += ' ' + className;
+    hasClass: function(elem, cls) {
+      return (' ' + elem.className + ' ').indexOf(' ' + cls + ' ') > -1;
     },
-    removeClass: function(elem, className) {
-      return elem.className = elem.className.replace(className, ' ').replace('  ', ' ');
+    addClass: function(elem, cls) {
+      if (!this.hasClass(elem, cls)) {
+        return elem.className += ' ' + cls;
+      }
+    },
+    removeClass: function(elem, cls) {
+      if (this.hasClass(elem, cls)) {
+        return elem.className = elem.className.replace(cls, ' ').replace('  ', ' ');
+      }
     },
     addEvent: function(elem, event, fn) {
       if (document.addEventListener) {
         return elem.addEventListener(event, fn);
       } else {
         return elem.attachEvent('on' + event, fn);
+      }
+    },
+    fullScreen: function(elem) {
+      if (elem == null) {
+        elem = document.documentElement;
+      }
+      if (elem.requestFullscreen) {
+        return elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        return elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        return elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        return elem.msRequestFullscreen();
+      }
+    },
+    cancelFullScreen: function() {
+      if (document.exitFullscreen) {
+        return document.exitFullscreen;
+      } else if (document.mozCancelFullScreen) {
+        return document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        return document.webkitExitFullscreen();
       }
     }
   };
@@ -24,12 +54,15 @@
     function Slide(config) {
       this.config = config;
       this.id = this.config.id;
-      this.cycle = this.config.cycle || true;
+      this.cycle = this.config.cycle;
       this["break"] = (this.config["break"] || 'hr').toUpperCase();
+      this.height = (this.config.height || 600) + 'px';
       this.node = document.getElementById(this.id);
+      Util.addClass(this.node, 'sj');
       this.show = new Show(this);
       this.control = new Control(this);
       this.progress_bar = new ProgressBar(this);
+      this.update_status();
     }
 
     Slide.prototype.update_status = function() {
@@ -54,6 +87,7 @@
       this.children = [];
       this.node = document.createElement('div');
       this.node.className = 'sj-show';
+      this.node.style.height = this.slide.height;
       _ref = this.slide.node.children;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
@@ -84,6 +118,22 @@
         this.slide.index = 0;
         return this.length = this.children.length;
       }
+    };
+
+    Show.prototype.is_first_page = function() {
+      return this.index === 0;
+    };
+
+    Show.prototype.is_last_page = function() {
+      return this.index === this.length - 1;
+    };
+
+    Show.prototype.is_first_fragment = function() {
+      return this.is_first_page() && this.children[this.index].is_first();
+    };
+
+    Show.prototype.is_last_fragment = function() {
+      return this.is_last_page() && this.children[this.index].is_end();
     };
 
     Show.prototype.next_page = function() {
@@ -337,25 +387,23 @@
     }
 
     PreviousPage.prototype.init = function(button) {
-      this.node.className = 'sj-previous-page';
+      this.node.className = 'sj-previous-page-button';
       this.node.innerHTML = '《';
       this.node.setAttribute('title', '上一页');
       return this.keyCode = 37;
-    };
-
-    PreviousPage.prototype.visible = function() {
-      return this.slide.length > 0;
-    };
-
-    PreviousPage.prototype.enable = function() {
-      return this.slide.cycle || this.slide.index !== 1;
     };
 
     PreviousPage.prototype.run = function(button, event) {
       return button.slide.show.previous_page();
     };
 
-    PreviousPage.prototype.update_status = function() {};
+    PreviousPage.prototype.update_status = function() {
+      if (!this.slide.cycle && this.slide.show.is_first_page()) {
+        return Util.addClass(this.node, 'sj-button-disable');
+      } else {
+        return Util.removeClass(this.node, 'sj-button-disable');
+      }
+    };
 
     return PreviousPage;
 
@@ -370,7 +418,7 @@
     }
 
     PreviousFragment.prototype.init = function(button) {
-      this.node.className = 'sj-previous-fragment';
+      this.node.className = 'sj-previous-fragment-button';
       this.node.innerHTML = '&lt;';
       this.node.setAttribute('title', '上一段');
       return this.keyCode = 38;
@@ -380,7 +428,13 @@
       return button.slide.show.previous_fragment();
     };
 
-    PreviousFragment.prototype.update_status = function() {};
+    PreviousFragment.prototype.update_status = function() {
+      if (!this.slide.cycle && this.slide.show.is_first_fragment()) {
+        return Util.addClass(this.node, 'sj-button-disable');
+      } else {
+        return Util.removeClass(this.node, 'sj-button-disable');
+      }
+    };
 
     return PreviousFragment;
 
@@ -395,7 +449,7 @@
     }
 
     NextFragment.prototype.init = function(button) {
-      this.node.className = 'sj-next-fragmet';
+      this.node.className = 'sj-next-fragmet-button';
       this.node.innerHTML = '&gt;';
       this.node.setAttribute('title', '下一段');
       return this.keyCode = 40;
@@ -405,7 +459,13 @@
       return button.slide.show.next_fragment();
     };
 
-    NextFragment.prototype.update_status = function() {};
+    NextFragment.prototype.update_status = function() {
+      if (!this.slide.cycle && this.slide.show.is_last_fragment()) {
+        return Util.addClass(this.node, 'sj-button-disable');
+      } else {
+        return Util.removeClass(this.node, 'sj-button-disable');
+      }
+    };
 
     return NextFragment;
 
@@ -420,25 +480,23 @@
     }
 
     NextPage.prototype.init = function(button) {
-      this.node.className = 'sj-next-page';
+      this.node.className = 'sj-next-page-button';
       this.node.innerHTML = '》';
       this.node.setAttribute('title', '下一页');
       return this.keyCode = 39;
-    };
-
-    NextPage.prototype.visible = function(slide) {
-      return slide.length > 0;
-    };
-
-    NextPage.prototype.enable = function(slide) {
-      return slide.cycle || slide.index !== slide.length;
     };
 
     NextPage.prototype.run = function(button, event) {
       return button.slide.show.next_page();
     };
 
-    NextPage.prototype.update_status = function() {};
+    NextPage.prototype.update_status = function() {
+      if (!this.slide.cycle && this.slide.show.is_last_page()) {
+        return Util.addClass(this.node, 'sj-button-disable');
+      } else {
+        return Util.removeClass(this.node, 'sj-button-disable');
+      }
+    };
 
     return NextPage;
 
@@ -457,35 +515,26 @@
       this.node.className = 'sj-full-screen-button';
       this.node.innerHTML = '□';
       this.node.setAttribute('title', '全屏');
+      this.is_full_screen = false;
       _ref5 = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange'];
       _results = [];
       for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
         listener_name = _ref5[_i];
         _results.push(Util.addEvent(document, listener_name, function(event) {
-          if (document.webkitCurrentFullScreenElement) {
-            return Util.addClass(button.slide.node, 'sj-full-screen');
+          if (button.is_full_screen) {
+            Util.addClass(button.slide.node, 'sj-full-screen');
           } else {
-            return Util.removeClass(button.slide.node, 'sj-full-screen');
+            Util.removeClass(button.slide.node, 'sj-full-screen');
           }
+          return button.is_full_screen = false;
         }));
       }
       return _results;
     };
 
     FullScreen.prototype.run = function(button, event) {
-      var node, request;
-      if (document.webkitCurrentFullScreenElement) {
-        request = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || document.exitFullscreen;
-        if (request) {
-          return request.call(document);
-        }
-      } else {
-        node = button.slide.node;
-        request = node.requestFullScreen || node.mozRequestFullScreen || node.webkitRequestFullScreen || node.msRequestFullScreen;
-        if (request) {
-          return request.call(node);
-        }
-      }
+      Util.fullScreen(button.slide.show.node);
+      return this.is_full_screen = true;
     };
 
     FullScreen.prototype.update_status = function() {};
@@ -551,7 +600,8 @@
     return new Slide({
       id: 'content',
       cycle: false,
-      "break": 'hr'
+      "break": 'hr',
+      height: 600
     });
   };
 

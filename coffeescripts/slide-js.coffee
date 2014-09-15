@@ -1,6 +1,6 @@
 ################################################################################################
 #                                                                                              #
-#  Slide                                                                                       #
+#  Slide(.sj)                                                                                  #
 #                                                                                              #
 #  ##########################################################################################  #
 #  #                                                                                        #  #
@@ -23,19 +23,39 @@
 #                                                                                              #
 ################################################################################################
 Util =
-  addClass: (elem, className) -> elem.className += ' ' + className
-  removeClass: (elem, className) -> elem.className = elem.className.replace(className, ' ').replace('  ', ' ')
-  addEvent: (elem, event, fn) -> if document.addEventListener then elem.addEventListener(event, fn) else elem.attachEvent('on' + event, fn)
+  hasClass: (elem, cls) -> (' ' + elem.className+ ' ').indexOf(' ' + cls + ' ') > -1
+  addClass: (elem, cls) -> elem.className += ' ' + cls unless @hasClass(elem, cls)
+  removeClass: (elem, cls) -> elem.className = elem.className.replace(cls, ' ').replace('  ', ' ') if @hasClass(elem, cls)
+  addEvent: (elem, event, fn) -> if document.addEventListener then elem.addEventListener(event, fn) else elem.attachEvent('on' + event, fn) 
+  fullScreen: (elem = document.documentElement) ->
+    if elem.requestFullscreen
+      elem.requestFullscreen()
+    else if elem.mozRequestFullScreen
+      elem.mozRequestFullScreen()
+    else if elem.webkitRequestFullscreen
+      elem.webkitRequestFullscreen()
+    else if elem.msRequestFullscreen
+      elem.msRequestFullscreen()
+  cancelFullScreen: ->
+    if document.exitFullscreen
+      document.exitFullscreen
+    else if document.mozCancelFullScreen
+      document.mozCancelFullScreen()
+    else if document.webkitExitFullscreen
+      document.webkitExitFullscreen()
 
 class Slide
   constructor: (@config) ->
     @id = @config.id
-    @cycle = @config.cycle || true
+    @cycle = @config.cycle
     @break = (@config.break || 'hr').toUpperCase()
+    @height = (@config.height || 600) + 'px'
     @node = document.getElementById @id
+    Util.addClass(@node, 'sj')
     @show = new Show(@)
     @control = new Control(@)
     @progress_bar = new ProgressBar(@)
+    @update_status()
 
   update_status: ->
     @control.update_status() if @control
@@ -48,6 +68,7 @@ class Show
     @children = []
     @node = document.createElement 'div'
     @node.className = 'sj-show'
+    @node.style.height = @slide.height
     for child in @slide.node.children
       page = new Page unless page
       if child.tagName is @slide.break
@@ -68,6 +89,14 @@ class Show
       @node.appendChild page.node
       @slide.index = 0
       @length = @children.length
+
+  is_first_page: -> @index is 0
+
+  is_last_page: -> @index is @length - 1
+
+  is_first_fragment: -> @is_first_page() && @children[@index].is_first()
+
+  is_last_fragment: -> @is_last_page() && @children[@index].is_end()
 
   next_page: ->
     if 0 <= @index < @length - 1
@@ -210,22 +239,22 @@ class Button
 
 class PreviousPage extends Button
   init: (button)->
-    @node.className = 'sj-previous-page'
+    @node.className = 'sj-previous-page-button'
     @node.innerHTML = '《'
     @node.setAttribute('title', '上一页')
     @keyCode = 37
 
-  visible: -> @slide.length > 0
-
-  enable: -> @slide.cycle || @slide.index isnt 1
-
   run: (button, event) -> button.slide.show.previous_page()
 
   update_status: ->
+    if not @slide.cycle && @slide.show.is_first_page()
+      Util.addClass(@node, 'sj-button-disable')
+    else
+      Util.removeClass(@node, 'sj-button-disable')
 
 class PreviousFragment extends Button
   init: (button)->
-    @node.className = 'sj-previous-fragment'
+    @node.className = 'sj-previous-fragment-button'
     @node.innerHTML = '&lt;'
     @node.setAttribute('title', '上一段')
     @keyCode = 38
@@ -233,10 +262,14 @@ class PreviousFragment extends Button
   run: (button, event) -> button.slide.show.previous_fragment()
 
   update_status: ->
+    if not @slide.cycle && @slide.show.is_first_fragment()
+      Util.addClass(@node, 'sj-button-disable')
+    else
+      Util.removeClass(@node, 'sj-button-disable')
 
 class NextFragment extends Button
   init: (button)->
-    @node.className = 'sj-next-fragmet'
+    @node.className = 'sj-next-fragmet-button'
     @node.innerHTML = '&gt;'
     @node.setAttribute('title', '下一段')
     @keyCode = 40
@@ -244,42 +277,44 @@ class NextFragment extends Button
   run: (button, event) -> button.slide.show.next_fragment()
 
   update_status: ->
+    if not @slide.cycle && @slide.show.is_last_fragment()
+      Util.addClass(@node, 'sj-button-disable')
+    else
+      Util.removeClass(@node, 'sj-button-disable')
 
 class NextPage extends Button
   init: (button)->
-    @node.className = 'sj-next-page'
+    @node.className = 'sj-next-page-button'
     @node.innerHTML = '》'
     @node.setAttribute('title', '下一页')
     @keyCode = 39
 
-  visible: (slide) -> slide.length > 0
-  enable: (slide) -> slide.cycle || slide.index isnt slide.length
-
   run: (button, event) -> button.slide.show.next_page()
 
-  update_status: -> 
-    # if @slide.config.cycle || @slide.show.index isnt @slide.show.length
-    #   @node.style.display = 'none'
+  update_status: ->
+    if not @slide.cycle && @slide.show.is_last_page()
+      Util.addClass(@node, 'sj-button-disable')
+    else
+      Util.removeClass(@node, 'sj-button-disable')
 
 class FullScreen extends Button
   init: (button)->
     @node.className = 'sj-full-screen-button'
     @node.innerHTML = '□'
     @node.setAttribute('title', '全屏')
-    for listener_name in ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange']
-      Util.addEvent document, listener_name, (event) -> 
-        if document.webkitCurrentFullScreenElement
-          Util.addClass(button.slide.node, 'sj-full-screen') 
+    @is_full_screen = false
+    for listener_name in ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange']
+      Util.addEvent(document, listener_name, (event) ->
+        if button.is_full_screen
+          Util.addClass(button.slide.node, 'sj-full-screen')
         else
-          Util.removeClass(button.slide.node, 'sj-full-screen') 
+          Util.removeClass(button.slide.node, 'sj-full-screen')
+        button.is_full_screen = false
+      )
+       
   run: (button, event) ->
-    if document.webkitCurrentFullScreenElement
-      request = (document.cancelFullScreen|| document.webkitCancelFullScreen|| document.mozCancelFullScreen|| document.exitFullscreen)
-      request.call(document) if request   
-    else
-      node = button.slide.node
-      request = (node.requestFullScreen || node.mozRequestFullScreen || node.webkitRequestFullScreen || node.msRequestFullScreen)
-      request.call(node) if request
+    Util.fullScreen(button.slide.show.node)
+    @is_full_screen = true
 
   update_status: ->
 
@@ -318,4 +353,4 @@ class ProgressBar
 
   update_status: -> @inner_node.style.width = "#{ (@slide.show.index + 1) / @slide.show.length * 100}%" if @slide.show.length isnt -1
 
-window.onload = -> new Slide {id: 'content', cycle: false, break: 'hr'}
+window.onload = -> new Slide {id: 'content', cycle: false, break: 'hr', height: 600}

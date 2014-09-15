@@ -1,81 +1,74 @@
-body {
-  max-width: 90%;
-  margin: 0 auto;
-  background: radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));
-}
-.sj-show {
-  display: block;
-  width: auto;
-  height: 600px;
-  overflow: hidden;
-  padding: 40px 60px;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-  background-color: rgb(255, 255, 255);
-  border-width: 1px 1px 0 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.3);
-}
-.sj-control {
-  display: block;
-  width: auto;
-  height: 30px;
-  overflow: hidden;
-  background-color: rgb(255, 255, 255);
-  border-width: 0px 1px 0 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.3);
-  .sj-previous-page, .sj-previous-fragment, .sj-next-fragmet, .sj-next-page, .sj-full-screen-button {
-    cursor: pointer;
-    float: left;
-    margin: 6px;
-  }
-  .sj-page-info {
-    float: right;
-    padding: 0px 10px 0px 10px;
-  }
-}
-.sj-progress-bar {
-  height: auto;
-  padding: 0;
-  border-width: 0px 1px 0px 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.3);
-  .sj-progress-outer {
+.sj {
+  .sj-show {
+    display: block;
     width: auto;
-    height: 6px;
-    padding: 1px;
-    background: #666666;
-    background: #666666 linear-gradient(#666666,#000000);
-    box-shadow: #000000 0 1px 0, #666666 0 -1px 0;
-    .sj-progress-inner {
-      height: 6px;
-      width: 10px;
-      min-width: 10px;
-      border-radius: 3px;
-      background: #33af33;
-      background: #33af33 linear-gradient(#88b038, #33af33);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    background-color: rgb(255, 255, 255);
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.3);
+    .sj-page {
+      margin: 40px;
     }
   }
+  .sj-control {
+    display: block;
+    width: auto;
+    height: 30px;
+    overflow: hidden;
+    background-color: rgb(255, 255, 255);
+    border-width: 0px 1px 0 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.3);
+    .sj-previous-page-button, .sj-previous-fragment-button, .sj-next-fragmet-button, .sj-next-page-button, .sj-full-screen-button {
+      cursor: pointer;
+      float: left;
+      margin: 6px;
+    }
+    .sj-page-info {
+      float: right;
+      padding: 0px 10px 0px 10px;
+    }
+  }
+  .sj-progress-bar {
+    display: block;
+    height: auto;
+    padding: 0;
+    border-width: 0px 1px 0px 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.3);
+    .sj-progress-outer {
+      width: auto;
+      height: 6px;
+      padding: 1px;
+      background: #666666;
+      background: #666666 linear-gradient(#666666,#000000);
+      box-shadow: #000000 0 1px 0, #666666 0 -1px 0;
+      .sj-progress-inner {
+        height: 6px;
+        width: 10px;
+        min-width: 10px;
+        border-radius: 3px;
+        background: #33af33;
+        background: #33af33 linear-gradient(#88b038, #33af33);
+      }
+    }
+  }
+}
+.sj-button-disable {
+  background-color: red;
+}
+:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
 }
 .sj-full-screen {
   width: 100%;
   height: 100%;
   .sj-show {
-    width: auto;
-    height: 100%;
-  }
-  .sj-progress-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0; 
-  }
-  .sj-control {
-    position:absolute;
+    padding: 40px;
     width: 100%;
-    bottom: 10px;
-    z-index: 100;
+    height: 100% !important;
   }
 }
