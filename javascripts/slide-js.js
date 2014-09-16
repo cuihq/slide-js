@@ -48,8 +48,6 @@
       this.cycle = this.config.cycle;
       this["break"] = (this.config["break"] || 'hr').toUpperCase();
       this.height = (this.config.height || 600) + 'px';
-      this.rotate = this.config.rotate;
-      this.fade = this.config.fade;
       this.node = document.getElementById(this.id);
       Util.add_class(this.node, 'sj');
       this.show = new Show(this);
@@ -108,12 +106,14 @@
       this.node.onclick = function() {
         return _show.next_fragment();
       };
-      this.node.addEventListener('touchstart', function(event) {
-        return _show.touchstart(event);
-      }, false);
-      this.node.addEventListener('touchend', function(event) {
-        return _show.touchend(event);
-      }, false);
+      if (this.node.addEventListener) {
+        this.node.addEventListener('touchstart', function(event) {
+          return _show.touchstart(event);
+        }, false);
+        this.node.addEventListener('touchend', function(event) {
+          return _show.touchend(event);
+        }, false);
+      }
       this.beginX = 0;
       this.beginY = 0;
       this.endX = 0;

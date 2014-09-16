@@ -43,8 +43,6 @@ class Slide
     @cycle = @config.cycle
     @break = (@config.break || 'hr').toUpperCase()
     @height = (@config.height || 600) + 'px'
-    @rotate = @config.rotate
-    @fade = @config.fade
     @node = document.getElementById @id
     Util.add_class(@node, 'sj')
     @show = new Show(@)
@@ -80,12 +78,13 @@ class Show
     @index = 0 if @length isnt 0
     _show = @
     @node.onclick = -> _show.next_fragment()
-    @node.addEventListener('touchstart', (event) -> 
-      _show.touchstart(event)
-    , false)
-    @node.addEventListener('touchend', (event) ->
-      _show.touchend(event)
-    , false)
+    if @node.addEventListener
+      @node.addEventListener('touchstart', (event) -> 
+        _show.touchstart(event)
+      , false)
+      @node.addEventListener('touchend', (event) ->
+        _show.touchend(event)
+      , false)
     @beginX = 0
     @beginY = 0
     @endX = 0
