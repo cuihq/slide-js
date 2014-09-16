@@ -1,9 +1,7 @@
-@import "compass/css3";
-$front-color: #33af33;
+$front-color: #b83000;
 $backround-color: #ffffff;
 $button-active-color: #3c8dde;
 .sj {
-  @include user-select(none);
   .sj-show {
     display: block;
     width: auto;
@@ -101,8 +99,7 @@ $button-active-color: #3c8dde;
     .sj-progress-inner {
       height: 10px;
       min-width: 10px;
-      background: #33af33;
-      background: #33af33 linear-gradient(#88b038, #33af33);
+      background: $front-color;
     }
   }
 }
