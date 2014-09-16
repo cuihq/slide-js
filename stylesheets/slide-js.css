@@ -126,17 +126,21 @@
 }
 /* line 110, ../scss/slide-js.scss */
 .sj-full-screen .sj-show {
-  padding: 40px;
+  padding: 40px 8px 8px 8px;
   width: 100%;
   height: 100% !important;
 }
 /* line 116, ../scss/slide-js.scss */
+.sj-full-screen .sj-control .sj-previous-page-button, .sj-full-screen .sj-control .sj-previous-fragment-button, .sj-full-screen .sj-control .sj-next-fragmet-button, .sj-full-screen .sj-control .sj-next-page-button, .sj-full-screen .sj-control .sj-full-screen-button {
+  display: none;
+}
+/* line 119, ../scss/slide-js.scss */
 .sj-full-screen .sj-control .sj-page-info {
   position: absolute;
   top: 20px;
   right: 0px;
 }
-/* line 122, ../scss/slide-js.scss */
+/* line 125, ../scss/slide-js.scss */
 .sj-full-screen .sj-progress-bar {
   position: absolute;
   top: 0px;

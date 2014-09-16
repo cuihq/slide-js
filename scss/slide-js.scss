@@ -108,11 +108,14 @@ $button-active-color: #3c8dde;
   width: 100%;
   height: 100%;
   .sj-show {
-    padding: 40px;
+    padding: 40px 8px 8px 8px;
     width: 100%;
     height: 100% !important;
   }
   .sj-control {
+    .sj-previous-page-button, .sj-previous-fragment-button, .sj-next-fragmet-button, .sj-next-page-button, .sj-full-screen-button {
+      display: none;
+    }
     .sj-page-info {
       position: absolute;
       top: 20px;
