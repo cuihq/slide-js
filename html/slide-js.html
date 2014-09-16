@@ -13,8 +13,20 @@
         background: radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));
       }
     </style>
-  </head>
-  <body>
+    <script>
+      (function() {
+        window.onload = function() {
+          return new Slide({
+            id: 'content',
+            cycle: false,
+            "break": 'hr',
+            height: 600
+          });
+        };
+      
+      }).call(this);
+    </script>
+    <body></body>
     <h1>幻灯片Demo</h1>
     <div id='content'>
       <h1>第一页</h1>
@@ -33,5 +45,5 @@
       <p>第三页第三段内容</p>
     </div>
     <h1>使用上下左右箭头和空格控制</h1>
-  </body>
+  </head>
 </html>

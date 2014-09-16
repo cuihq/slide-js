@@ -12,7 +12,9 @@
         margin: 0 auto;
         background: radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));
       }
-  %body
+    :coffee
+      window.onload = -> new Slide {id: 'content', cycle: false, break: 'hr', height: 600 }
+    %body
     %h1 幻灯片Demo
     #content
       %h1 第一页
@@ -29,4 +31,5 @@
       %p 第三页第一段内容
       %p 第三页第二段内容
       %p 第三页第三段内容
-    %h1 使用上下左右箭头和空格控制
+    %p 电脑上可以使用上下左右箭头和鼠标控制
+    %p 移动端，全屏支持触摸滑动

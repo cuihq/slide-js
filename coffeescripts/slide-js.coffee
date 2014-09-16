@@ -48,9 +48,10 @@ class Slide
     @node = document.getElementById @id
     Util.add_class(@node, 'sj')
     @show = new Show(@)
-    @control = new Control(@)
-    @progress_bar = new ProgressBar(@)
-    @update_status()
+    if @show.length isnt - 1
+      @control = new Control(@)
+      @progress_bar = new ProgressBar(@)
+      @update_status()
 
   update_status: ->
     @control.update_status() if @control
@@ -278,7 +279,7 @@ class Button
 
   mouse_down: (button, event) -> button.run(button, event)
 
-  key_up: (button, event) -> button.run(button, event) if button.keyCode && event.keyCode is button.keyCode
+  key_up: (button, event) -> button.run(button, event)
 
 class PreviousPage extends Button
   init: (button)->
@@ -289,7 +290,7 @@ class PreviousPage extends Button
   run: (button, event) -> button.slide.show.previous_page()
 
   update_status: ->
-    if not @slide.cycle && @slide.show.is_first_page()
+    if not @slide.cycle && @slide.show.is_first_page() 
       Util.add_class(@node, 'sj-button-disable')
     else
       Util.remove_class(@node, 'sj-button-disable')
@@ -388,5 +389,4 @@ class ProgressBar
 
   update_status: -> @inner_node.style.width = "#{ @slide.show.index / (@slide.show.length - 1) * 100}%" if @slide.show.length isnt -1
 
-window.onload = -> 
-  new Slide {id: 'content', cycle: false, break: 'hr', height: 600 }
+window.Slide = Slide

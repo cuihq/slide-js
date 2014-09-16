@@ -40,7 +40,7 @@
 /* line 33, ../scss/slide-js.scss */
 .sj .sj-control .sj-previous-fragment-button {
   bottom: 60px;
-  border-right: 30px solid orange;
+  border-right: 30px solid #33af33;
   border-top: 15px solid transparent;
   border-bottom: 15px solid transparent;
 }
@@ -52,7 +52,7 @@
 .sj .sj-control .sj-previous-page-button {
   bottom: 60px;
   left: 30px;
-  border-bottom: 30px solid orange;
+  border-bottom: 30px solid #33af33;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
 }
@@ -64,7 +64,7 @@
 .sj .sj-control .sj-next-page-button {
   bottom: 90px;
   left: 30px;
-  border-top: 30px solid orange;
+  border-top: 30px solid #33af33;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
 }
@@ -76,7 +76,7 @@
 .sj .sj-control .sj-next-fragmet-button {
   bottom: 90px;
   left: 60px;
-  border-left: 30px solid orange;
+  border-left: 30px solid #33af33;
   border-top: 15px solid transparent;
   border-bottom: 15px solid transparent;
 }
@@ -91,7 +91,7 @@
   position: relative;
   bottom: 150px;
   left: 30px;
-  background-color: orange;
+  background-color: #33af33;
   width: 30px;
   height: 30px;
 }

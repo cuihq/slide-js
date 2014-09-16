@@ -53,9 +53,11 @@
       this.node = document.getElementById(this.id);
       Util.add_class(this.node, 'sj');
       this.show = new Show(this);
-      this.control = new Control(this);
-      this.progress_bar = new ProgressBar(this);
-      this.update_status();
+      if (this.show.length !== -1) {
+        this.control = new Control(this);
+        this.progress_bar = new ProgressBar(this);
+        this.update_status();
+      }
     }
 
     Slide.prototype.update_status = function() {
@@ -424,9 +426,7 @@
     };
 
     Button.prototype.key_up = function(button, event) {
-      if (button.keyCode && event.keyCode === button.keyCode) {
-        return button.run(button, event);
-      }
+      return button.run(button, event);
     };
 
     return Button;
@@ -643,13 +643,6 @@
 
   })();
 
-  window.onload = function() {
-    return new Slide({
-      id: 'content',
-      cycle: false,
-      "break": 'hr',
-      height: 600
-    });
-  };
+  window.Slide = Slide;
 
 }).call(this);
