@@ -73,7 +73,7 @@
 
   Show = (function() {
     function Show(slide) {
-      var child, fragment, page, _i, _len, _ref;
+      var child, fragment, page, _i, _len, _ref, _show;
       this.slide = slide;
       this.index = -1;
       this.length = -1;
@@ -102,7 +102,60 @@
       if (this.length !== 0) {
         this.index = 0;
       }
+      _show = this;
+      this.node.onclick = function() {
+        return _show.next_fragment();
+      };
+      this.node.addEventListener('touchstart', function(event) {
+        return _show.touchstart(event);
+      }, false);
+      this.node.addEventListener('touchend', function(event) {
+        return _show.touchend(event);
+      }, false);
+      this.beginX = 0;
+      this.beginY = 0;
+      this.endX = 0;
+      this.endY = 0;
     }
+
+    Show.prototype.touchstart = function(event) {
+      if (Util.has_class(this.slide.node, 'sj-full-screen')) {
+        this.beginX = event.touches[0].clientX;
+        return this.beginY = event.touches[0].clientY;
+      } else {
+        this.beginX = 0;
+        this.beginY = 0;
+        this.endX = 0;
+        return this.endY = 0;
+      }
+    };
+
+    Show.prototype.touchend = function(event) {
+      var lengthX, lengthY;
+      if (Util.has_class(this.slide.node, 'sj-full-screen')) {
+        this.endX = event.changedTouches[0].clientX;
+        this.endY = event.changedTouches[0].clientY;
+        lengthX = this.endX - this.beginX;
+        lengthY = this.endY - this.beginY;
+        if (Math.abs(lengthX) > Math.abs(lengthY)) {
+          if (lengthX >= 100) {
+            this.previous_fragment();
+          } else if (lengthX <= -100) {
+            this.next_fragment();
+          }
+        } else {
+          if (lengthY >= 100) {
+            this.previous_page();
+          } else if (lengthY <= -100) {
+            this.next_page();
+          }
+        }
+      }
+      this.beginX = 0;
+      this.beginY = 0;
+      this.endX = 0;
+      return this.endY = 0;
+    };
 
     Show.prototype.add = function(page) {
       if (page) {

@@ -77,6 +77,49 @@ class Show
     @add page
     @slide.node.appendChild @node
     @index = 0 if @length isnt 0
+    _show = @
+    @node.onclick = -> _show.next_fragment()
+    @node.addEventListener('touchstart', (event) -> 
+      _show.touchstart(event)
+    , false)
+    @node.addEventListener('touchend', (event) ->
+      _show.touchend(event)
+    , false)
+    @beginX = 0
+    @beginY = 0
+    @endX = 0
+    @endY = 0
+
+  touchstart: (event) ->
+    if Util.has_class(@slide.node, 'sj-full-screen')
+      @beginX = event.touches[0].clientX
+      @beginY = event.touches[0].clientY
+    else
+      @beginX = 0
+      @beginY = 0
+      @endX = 0
+      @endY = 0
+
+  touchend: (event) ->
+    if Util.has_class(@slide.node, 'sj-full-screen')
+      @endX = event.changedTouches[0].clientX
+      @endY = event.changedTouches[0].clientY
+      lengthX = @endX - @beginX
+      lengthY = @endY - @beginY
+      if Math.abs(lengthX) > Math.abs(lengthY)
+        if lengthX >= 100
+          @previous_fragment()
+        else if lengthX <= -100
+          @next_fragment()
+      else
+        if lengthY >= 100
+          @previous_page() 
+        else if lengthY <= -100
+          @next_page()
+    @beginX = 0
+    @beginY = 0
+    @endX = 0
+    @endY = 0
 
   add: (page) ->
     if page
@@ -345,4 +388,5 @@ class ProgressBar
 
   update_status: -> @inner_node.style.width = "#{ @slide.show.index / (@slide.show.length - 1) * 100}%" if @slide.show.length isnt -1
 
-window.onload = -> new Slide {id: 'content', cycle: false, break: 'hr', height: 600 }
+window.onload = -> 
+  new Slide {id: 'content', cycle: false, break: 'hr', height: 600 }
