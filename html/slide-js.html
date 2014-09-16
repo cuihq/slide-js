@@ -10,24 +10,18 @@
       body {
         width: 80%;
         margin: 0 auto;
-        background: radial-gradient(rgb(240, 240, 240), rgb(190, 190, 190));
+      }
+      #ppt {
+        background-color: #33af33;
+        color: #ffffff;
+        margin: 10px;
+        width: 80px;
+        text-align: center;
       }
     </style>
-    <script>
-      (function() {
-        window.onload = function() {
-          return new Slide({
-            id: 'content',
-            cycle: false,
-            "break": 'hr',
-            height: 600
-          });
-        };
-      
-      }).call(this);
-    </script>
     <body></body>
     <h1>幻灯片Demo</h1>
+    <div id='ppt'>PPT</div>
     <div id='content'>
       <h1>第一页</h1>
       <p>第一页第一段内容</p>
@@ -44,6 +38,32 @@
       <p>第三页第二段内容</p>
       <p>第三页第三段内容</p>
     </div>
-    <h1>使用上下左右箭头和空格控制</h1>
+    <p>电脑上可以使用上下左右箭头和鼠标控制</p>
+    <p>移动端，全屏支持触摸滑动</p>
+    <script>
+      (function() {
+        var ppt, slide;
+      
+        slide = new Slide({
+          id: 'content',
+          cycle: false,
+          "break": 'hr',
+          height: 600
+        });
+      
+        ppt = document.getElementById('ppt');
+      
+        ppt.onclick = function() {
+          if (slide.is_enable()) {
+            slide.stop();
+            return ppt.innerText = 'PPT';
+          } else {
+            slide.start();
+            return ppt.innerText = 'Norm';
+          }
+        };
+      
+      }).call(this);
+    </script>
   </head>
 </html>

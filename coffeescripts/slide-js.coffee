@@ -49,20 +49,40 @@ class Slide
     if @show.length isnt - 1
       @control = new Control(@)
       @progress_bar = new ProgressBar(@)
-      @update_status()
+    @enable = false
+
+  is_enable: -> @enable
+
+  start: ->
+    unless @enable
+      @enable = true
+      @show.start()
+      @control.start()
+      @progress_bar.start()
+      @update_status()  
+
+  stop: ->
+    if @enable
+      @enable = false
+      @show.stop()
+      @control.stop()
+      @progress_bar.stop()
 
   update_status: ->
-    @control.update_status() if @control
-    @progress_bar.update_status() if @progress_bar
+    if @enable
+      @control.update_status() if @control
+      @progress_bar.update_status() if @progress_bar
 
 class Show
   constructor: (@slide) ->
     @index = -1
     @length = -1
     @children = []
+    @original_children = []
     @node = document.createElement 'div'
     @node.className = 'sj-show'
     @node.style.height = @slide.height
+    @node.style.display = 'none'
     for child in @slide.node.children
       page = new Page(@slide) unless page
       if child.tagName is @slide.break
@@ -72,12 +92,11 @@ class Show
         fragment = new Fragment @slide
         fragment.add child.cloneNode(true)
         page.add fragment
-      child.style.display = 'none'
+      @original_children.push child
     @add page
-    @slide.node.appendChild @node
     @index = 0 if @length isnt 0
     _show = @
-    @node.onclick = -> _show.next_fragment()
+    Util.add_event(@node, 'mousedown', (event) -> _show.next_fragment())
     if @node.addEventListener
       @node.addEventListener('touchstart', (event) -> 
         _show.touchstart(event)
@@ -89,9 +108,20 @@ class Show
     @beginY = 0
     @endX = 0
     @endY = 0
+    @slide.node.appendChild @node
+
+  start: ->
+    for child in @original_children
+      child.style.display = 'none'
+    @node.style.display = 'block'
+
+  stop: ->
+    @node.style.display = 'none'
+    for child in @original_children
+      child.style.display = ''
 
   touchstart: (event) ->
-    if Util.has_class(@slide.node, 'sj-full-screen')
+    if @slide.enable && Util.has_class(@slide.node, 'sj-full-screen')
       @beginX = event.touches[0].clientX
       @beginY = event.touches[0].clientY
     else
@@ -101,7 +131,7 @@ class Show
       @endY = 0
 
   touchend: (event) ->
-    if Util.has_class(@slide.node, 'sj-full-screen')
+    if @slide.enable && Util.has_class(@slide.node, 'sj-full-screen')
       @endX = event.changedTouches[0].clientX
       @endY = event.changedTouches[0].clientY
       lengthX = @endX - @beginX
@@ -250,13 +280,18 @@ class Control
   constructor: (@slide) ->
     @node = document.createElement 'div'
     @node.className = 'sj-control'
+    @node.style.display = 'none'
+    @page_info = new PageInfo(@slide, @)
     @previous_page = new PreviousPage(@slide, @)
     @previous_fragment = new PreviousFragment(@slide, @)
     @next_fragment = new NextFragment(@slide, @)
     @next_page = new NextPage(@slide, @)
     @full_screen = new FullScreen(@slide, @)
-    @page_info = new PageInfo(@slide, @)
     @slide.node.appendChild @node
+
+  start: -> @node.style.display = 'block'
+
+  stop: -> @node.style.display = 'none'
 
   update_status: ->
     @previous_page.update_status() if @previous_page
@@ -276,9 +311,9 @@ class Button
     Util.add_event(document, 'keyup', (event) -> _button.key_up(_button, event)) if @key_up
     @init(_button) if @init
 
-  mouse_down: (button, event) -> button.run(button, event)
+  mouse_down: (button, event) -> button.run(button, event) if @slide.enable
 
-  key_up: (button, event) -> button.run(button, event)
+  key_up: (button, event) -> button.run(button, event) if @slide.enable && @keyCode && event.keyCode is @keyCode
 
 class PreviousPage extends Button
   init: (button)->
@@ -381,10 +416,15 @@ class ProgressBar
   constructor: (@slide) ->
     @node = document.createElement 'div'
     @node.className = 'sj-progress-bar'
+    @node.style.display = 'none'
     @inner_node = document.createElement 'div'
     @inner_node.className = 'sj-progress-inner'
     @node.appendChild @inner_node
     @slide.node.appendChild @node
+
+  start: -> @node.style.display = 'block'
+
+  stop: -> @node.style.display = 'none'
 
   update_status: -> @inner_node.style.width = "#{ @slide.show.index / (@slide.show.length - 1) * 100}%" if @slide.show.length isnt -1
 

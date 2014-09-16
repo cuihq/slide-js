@@ -54,16 +54,41 @@
       if (this.show.length !== -1) {
         this.control = new Control(this);
         this.progress_bar = new ProgressBar(this);
-        this.update_status();
       }
+      this.enable = false;
     }
 
-    Slide.prototype.update_status = function() {
-      if (this.control) {
-        this.control.update_status();
+    Slide.prototype.is_enable = function() {
+      return this.enable;
+    };
+
+    Slide.prototype.start = function() {
+      if (!this.enable) {
+        this.enable = true;
+        this.show.start();
+        this.control.start();
+        this.progress_bar.start();
+        return this.update_status();
       }
-      if (this.progress_bar) {
-        return this.progress_bar.update_status();
+    };
+
+    Slide.prototype.stop = function() {
+      if (this.enable) {
+        this.enable = false;
+        this.show.stop();
+        this.control.stop();
+        return this.progress_bar.stop();
+      }
+    };
+
+    Slide.prototype.update_status = function() {
+      if (this.enable) {
+        if (this.control) {
+          this.control.update_status();
+        }
+        if (this.progress_bar) {
+          return this.progress_bar.update_status();
+        }
       }
     };
 
@@ -78,9 +103,11 @@
       this.index = -1;
       this.length = -1;
       this.children = [];
+      this.original_children = [];
       this.node = document.createElement('div');
       this.node.className = 'sj-show';
       this.node.style.height = this.slide.height;
+      this.node.style.display = 'none';
       _ref = this.slide.node.children;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
@@ -95,17 +122,16 @@
           fragment.add(child.cloneNode(true));
           page.add(fragment);
         }
-        child.style.display = 'none';
+        this.original_children.push(child);
       }
       this.add(page);
-      this.slide.node.appendChild(this.node);
       if (this.length !== 0) {
         this.index = 0;
       }
       _show = this;
-      this.node.onclick = function() {
+      Util.add_event(this.node, 'mousedown', function(event) {
         return _show.next_fragment();
-      };
+      });
       if (this.node.addEventListener) {
         this.node.addEventListener('touchstart', function(event) {
           return _show.touchstart(event);
@@ -118,10 +144,33 @@
       this.beginY = 0;
       this.endX = 0;
       this.endY = 0;
+      this.slide.node.appendChild(this.node);
     }
 
+    Show.prototype.start = function() {
+      var child, _i, _len, _ref;
+      _ref = this.original_children;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        child.style.display = 'none';
+      }
+      return this.node.style.display = 'block';
+    };
+
+    Show.prototype.stop = function() {
+      var child, _i, _len, _ref, _results;
+      this.node.style.display = 'none';
+      _ref = this.original_children;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        _results.push(child.style.display = '');
+      }
+      return _results;
+    };
+
     Show.prototype.touchstart = function(event) {
-      if (Util.has_class(this.slide.node, 'sj-full-screen')) {
+      if (this.slide.enable && Util.has_class(this.slide.node, 'sj-full-screen')) {
         this.beginX = event.touches[0].clientX;
         return this.beginY = event.touches[0].clientY;
       } else {
@@ -134,7 +183,7 @@
 
     Show.prototype.touchend = function(event) {
       var lengthX, lengthY;
-      if (Util.has_class(this.slide.node, 'sj-full-screen')) {
+      if (this.slide.enable && Util.has_class(this.slide.node, 'sj-full-screen')) {
         this.endX = event.changedTouches[0].clientX;
         this.endY = event.changedTouches[0].clientY;
         lengthX = this.endX - this.beginX;
@@ -363,14 +412,23 @@
       this.slide = slide;
       this.node = document.createElement('div');
       this.node.className = 'sj-control';
+      this.node.style.display = 'none';
+      this.page_info = new PageInfo(this.slide, this);
       this.previous_page = new PreviousPage(this.slide, this);
       this.previous_fragment = new PreviousFragment(this.slide, this);
       this.next_fragment = new NextFragment(this.slide, this);
       this.next_page = new NextPage(this.slide, this);
       this.full_screen = new FullScreen(this.slide, this);
-      this.page_info = new PageInfo(this.slide, this);
       this.slide.node.appendChild(this.node);
     }
+
+    Control.prototype.start = function() {
+      return this.node.style.display = 'block';
+    };
+
+    Control.prototype.stop = function() {
+      return this.node.style.display = 'none';
+    };
 
     Control.prototype.update_status = function() {
       if (this.previous_page) {
@@ -422,11 +480,15 @@
     }
 
     Button.prototype.mouse_down = function(button, event) {
-      return button.run(button, event);
+      if (this.slide.enable) {
+        return button.run(button, event);
+      }
     };
 
     Button.prototype.key_up = function(button, event) {
-      return button.run(button, event);
+      if (this.slide.enable && this.keyCode && event.keyCode === this.keyCode) {
+        return button.run(button, event);
+      }
     };
 
     return Button;
@@ -627,11 +689,20 @@
       this.slide = slide;
       this.node = document.createElement('div');
       this.node.className = 'sj-progress-bar';
+      this.node.style.display = 'none';
       this.inner_node = document.createElement('div');
       this.inner_node.className = 'sj-progress-inner';
       this.node.appendChild(this.inner_node);
       this.slide.node.appendChild(this.node);
     }
+
+    ProgressBar.prototype.start = function() {
+      return this.node.style.display = 'block';
+    };
+
+    ProgressBar.prototype.stop = function() {
+      return this.node.style.display = 'none';
+    };
 
     ProgressBar.prototype.update_status = function() {
       if (this.slide.show.length !== -1) {

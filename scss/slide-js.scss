@@ -1,5 +1,6 @@
 @import "compass/css3";
-$button-color: #33af33;
+$front-color: #33af33;
+$backround-color: #ffffff;
 $button-active-color: #3c8dde;
 .sj {
   @include user-select(none);
@@ -7,10 +8,10 @@ $button-active-color: #3c8dde;
     display: block;
     width: auto;
     overflow: hidden;
-    background-color: rgb(255, 255, 255);
+    background-color: $backround-color;
     border-width: 1px 1px 0 1px;
     border-style: solid;
-    border-color: rgba(0, 0, 0, 0.3);
+    border-color: $front-color;
     .sj-page {
       margin: 40px;
     }
@@ -19,10 +20,10 @@ $button-active-color: #3c8dde;
     display: block;
     width: auto;
     height: 30px;
-    background-color: rgb(255, 255, 255);
+    background-color: $backround-color;
     border-width: 0px 1px 0 1px;
     border-style: solid;
-    border-color: rgba(0, 0, 0, 0.3);
+    border-color: $front-color;
     .sj-previous-page-button, .sj-previous-fragment-button, .sj-next-fragmet-button, .sj-next-page-button {
       display: block;
       cursor: pointer;
@@ -32,7 +33,7 @@ $button-active-color: #3c8dde;
     }
     .sj-previous-fragment-button {
       bottom: 60px;
-      border-right: 30px solid $button-color;
+      border-right: 30px solid $front-color;
       &:hover, &:focus, &:active {
         border-right: 30px solid $button-active-color;
       }
@@ -42,7 +43,7 @@ $button-active-color: #3c8dde;
     .sj-previous-page-button {
       bottom: 60px;
       left: 30px;
-      border-bottom: 30px solid $button-color;
+      border-bottom: 30px solid $front-color;
       &:hover, &:focus, &:active {
         border-bottom: 30px solid $button-active-color;
       } 
@@ -52,7 +53,7 @@ $button-active-color: #3c8dde;
     .sj-next-page-button {
       bottom: 90px;
       left: 30px;
-      border-top: 30px solid $button-color;
+      border-top: 30px solid $front-color;
       &:hover, &:focus, &:active {
         border-top: 30px solid $button-active-color;
       }
@@ -62,7 +63,7 @@ $button-active-color: #3c8dde;
     .sj-next-fragmet-button {
       bottom: 90px;
       left: 60px;
-      border-left: 30px solid $button-color;
+      border-left: 30px solid $front-color;
       &:hover, &:focus, &:active {
         border-left: 30px solid $button-active-color;
       }
@@ -75,7 +76,7 @@ $button-active-color: #3c8dde;
       position: relative;
       bottom: 150px;
       left: 30px;
-      background-color: $button-color;
+      background-color: $front-color;
       &:hover, &:focus, &:active {
         background-color: $button-active-color;
       }
@@ -83,6 +84,8 @@ $button-active-color: #3c8dde;
       height: 30px;
     }
     .sj-page-info {
+      color: $backround-color;
+      background-color: $front-color;
       float: right;
       padding: 0px 10px 0px 10px;
     }
@@ -93,8 +96,8 @@ $button-active-color: #3c8dde;
     padding: 0;
     border-width: 0px 1px 1px 1px;
     border-style: solid;
-    border-color: rgba(0, 0, 0, 0.3);
-    background-color: rgb(255, 255, 255);
+    border-color: $front-color;
+    background-color: $backround-color;
     .sj-progress-inner {
       height: 10px;
       min-width: 10px;
@@ -103,12 +106,8 @@ $button-active-color: #3c8dde;
     }
   }
 }
-:-webkit-full-screen {
-  width: 100%;
-  height: 100%;
-}
 .sj-button-disable {
- opacity: 0.3;
+  opacity: 0.3;
 }
 .sj-full-screen {
   width: 100%;
