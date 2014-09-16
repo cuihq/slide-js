@@ -6,12 +6,13 @@
   border-width: 1px 1px 0 1px;
   border-style: solid;
   border-color: #b83000;
+  padding-bottom: 60px;
 }
-/* line 12, ../scss/slide-js.scss */
+/* line 13, ../scss/slide-js.scss */
 .sj .sj-show .sj-page {
   margin: 40px;
 }
-/* line 16, ../scss/slide-js.scss */
+/* line 17, ../scss/slide-js.scss */
 .sj .sj-control {
   width: auto;
   height: 30px;
@@ -20,7 +21,7 @@
   border-style: solid;
   border-color: #b83000;
 }
-/* line 23, ../scss/slide-js.scss */
+/* line 24, ../scss/slide-js.scss */
 .sj .sj-control .sj-previous-page-button, .sj .sj-control .sj-previous-fragment-button, .sj .sj-control .sj-next-fragmet-button, .sj .sj-control .sj-next-page-button {
   display: block;
   cursor: pointer;
@@ -28,18 +29,18 @@
   height: 0;
   position: relative;
 }
-/* line 30, ../scss/slide-js.scss */
+/* line 31, ../scss/slide-js.scss */
 .sj .sj-control .sj-previous-fragment-button {
   bottom: 60px;
   border-right: 30px solid #b83000;
   border-top: 15px solid transparent;
   border-bottom: 15px solid transparent;
 }
-/* line 33, ../scss/slide-js.scss */
+/* line 34, ../scss/slide-js.scss */
 .sj .sj-control .sj-previous-fragment-button:hover, .sj .sj-control .sj-previous-fragment-button:focus, .sj .sj-control .sj-previous-fragment-button:active {
   border-right: 30px solid #3c8dde;
 }
-/* line 39, ../scss/slide-js.scss */
+/* line 40, ../scss/slide-js.scss */
 .sj .sj-control .sj-previous-page-button {
   bottom: 60px;
   left: 30px;
@@ -47,11 +48,11 @@
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
 }
-/* line 43, ../scss/slide-js.scss */
+/* line 44, ../scss/slide-js.scss */
 .sj .sj-control .sj-previous-page-button:hover, .sj .sj-control .sj-previous-page-button:focus, .sj .sj-control .sj-previous-page-button:active {
   border-bottom: 30px solid #3c8dde;
 }
-/* line 49, ../scss/slide-js.scss */
+/* line 50, ../scss/slide-js.scss */
 .sj .sj-control .sj-next-page-button {
   bottom: 90px;
   left: 30px;
@@ -59,11 +60,11 @@
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
 }
-/* line 53, ../scss/slide-js.scss */
+/* line 54, ../scss/slide-js.scss */
 .sj .sj-control .sj-next-page-button:hover, .sj .sj-control .sj-next-page-button:focus, .sj .sj-control .sj-next-page-button:active {
   border-top: 30px solid #3c8dde;
 }
-/* line 59, ../scss/slide-js.scss */
+/* line 60, ../scss/slide-js.scss */
 .sj .sj-control .sj-next-fragmet-button {
   bottom: 90px;
   left: 60px;
@@ -71,11 +72,11 @@
   border-top: 15px solid transparent;
   border-bottom: 15px solid transparent;
 }
-/* line 63, ../scss/slide-js.scss */
+/* line 64, ../scss/slide-js.scss */
 .sj .sj-control .sj-next-fragmet-button:hover, .sj .sj-control .sj-next-fragmet-button:focus, .sj .sj-control .sj-next-fragmet-button:active {
   border-left: 30px solid #3c8dde;
 }
-/* line 69, ../scss/slide-js.scss */
+/* line 70, ../scss/slide-js.scss */
 .sj .sj-control .sj-full-screen-button {
   display: block;
   cursor: pointer;
@@ -86,18 +87,18 @@
   width: 30px;
   height: 30px;
 }
-/* line 76, ../scss/slide-js.scss */
+/* line 77, ../scss/slide-js.scss */
 .sj .sj-control .sj-full-screen-button:hover, .sj .sj-control .sj-full-screen-button:focus, .sj .sj-control .sj-full-screen-button:active {
   background-color: #3c8dde;
 }
-/* line 82, ../scss/slide-js.scss */
+/* line 83, ../scss/slide-js.scss */
 .sj .sj-control .sj-page-info {
   color: white;
   background-color: #b83000;
   float: right;
   padding: 0px 10px 0px 10px;
 }
-/* line 89, ../scss/slide-js.scss */
+/* line 90, ../scss/slide-js.scss */
 .sj .sj-progress-bar {
   height: auto;
   padding: 0;
@@ -106,36 +107,36 @@
   border-color: #b83000;
   background-color: white;
 }
-/* line 96, ../scss/slide-js.scss */
+/* line 97, ../scss/slide-js.scss */
 .sj .sj-progress-bar .sj-progress-inner {
   height: 10px;
   min-width: 10px;
   background: #b83000;
 }
 
-/* line 103, ../scss/slide-js.scss */
+/* line 104, ../scss/slide-js.scss */
 .sj-button-disable {
   opacity: 0.3;
 }
 
-/* line 106, ../scss/slide-js.scss */
+/* line 107, ../scss/slide-js.scss */
 .sj-full-screen {
   width: 100%;
   height: 100%;
 }
-/* line 109, ../scss/slide-js.scss */
+/* line 110, ../scss/slide-js.scss */
 .sj-full-screen .sj-show {
   padding: 40px;
   width: 100%;
   height: 100% !important;
 }
-/* line 115, ../scss/slide-js.scss */
+/* line 116, ../scss/slide-js.scss */
 .sj-full-screen .sj-control .sj-page-info {
   position: absolute;
   top: 20px;
   right: 0px;
 }
-/* line 121, ../scss/slide-js.scss */
+/* line 122, ../scss/slide-js.scss */
 .sj-full-screen .sj-progress-bar {
   position: absolute;
   top: 0px;

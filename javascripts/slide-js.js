@@ -506,7 +506,7 @@
     PreviousPage.prototype.init = function(button) {
       this.node.className = 'sj-previous-page-button';
       this.node.setAttribute('title', '上一页');
-      return this.keyCode = 37;
+      return this.keyCode = 38;
     };
 
     PreviousPage.prototype.run = function(button, event) {
@@ -536,7 +536,7 @@
     PreviousFragment.prototype.init = function(button) {
       this.node.className = 'sj-previous-fragment-button';
       this.node.setAttribute('title', '上一段');
-      return this.keyCode = 38;
+      return this.keyCode = 37;
     };
 
     PreviousFragment.prototype.run = function(button, event) {
@@ -566,7 +566,7 @@
     NextFragment.prototype.init = function(button) {
       this.node.className = 'sj-next-fragmet-button';
       this.node.setAttribute('title', '下一段');
-      return this.keyCode = 40;
+      return this.keyCode = 39;
     };
 
     NextFragment.prototype.run = function(button, event) {
@@ -596,7 +596,7 @@
     NextPage.prototype.init = function(button) {
       this.node.className = 'sj-next-page-button';
       this.node.setAttribute('title', '下一页');
-      return this.keyCode = 39;
+      return this.keyCode = 40;
     };
 
     NextPage.prototype.run = function(button, event) {

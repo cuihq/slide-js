@@ -319,7 +319,7 @@ class PreviousPage extends Button
   init: (button)->
     @node.className = 'sj-previous-page-button'
     @node.setAttribute('title', '上一页')
-    @keyCode = 37
+    @keyCode = 38
 
   run: (button, event) -> button.slide.show.previous_page()
 
@@ -333,7 +333,7 @@ class PreviousFragment extends Button
   init: (button)->
     @node.className = 'sj-previous-fragment-button'
     @node.setAttribute('title', '上一段')
-    @keyCode = 38
+    @keyCode = 37
   
   run: (button, event) -> button.slide.show.previous_fragment()
 
@@ -347,7 +347,7 @@ class NextFragment extends Button
   init: (button)->
     @node.className = 'sj-next-fragmet-button'
     @node.setAttribute('title', '下一段')
-    @keyCode = 40
+    @keyCode = 39
 
   run: (button, event) -> button.slide.show.next_fragment()
 
@@ -361,7 +361,7 @@ class NextPage extends Button
   init: (button)->
     @node.className = 'sj-next-page-button'
     @node.setAttribute('title', '下一页')
-    @keyCode = 39
+    @keyCode = 40
 
   run: (button, event) -> button.slide.show.next_page()
 
