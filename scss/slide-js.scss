@@ -3,7 +3,6 @@ $backround-color: #ffffff;
 $button-active-color: #3c8dde;
 .sj {
   .sj-show {
-    display: block;
     width: auto;
     overflow: hidden;
     background-color: $backround-color;
@@ -15,7 +14,6 @@ $button-active-color: #3c8dde;
     }
   }
   .sj-control {
-    display: block;
     width: auto;
     height: 30px;
     background-color: $backround-color;
@@ -89,7 +87,6 @@ $button-active-color: #3c8dde;
     }
   }
   .sj-progress-bar {
-    display: block;
     height: auto;
     padding: 0;
     border-width: 0px 1px 1px 1px;
@@ -113,5 +110,17 @@ $button-active-color: #3c8dde;
     padding: 40px;
     width: 100%;
     height: 100% !important;
+  }
+  .sj-control {
+    .sj-page-info {
+      position: absolute;
+      top: 20px;
+      right: 0px;
+    }
+  }
+  .sj-progress-bar {
+    position: absolute;
+    top: 0px;
+    width: 100%;
   }
 }

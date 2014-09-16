@@ -386,7 +386,7 @@ class FullScreen extends Button
       )
        
   run: (button, event) ->
-    Util.full_screen(button.slide.show.node)
+    Util.full_screen(button.slide.node)
     @is_full_screen = true
 
   update_status: ->

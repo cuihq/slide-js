@@ -645,7 +645,7 @@
     };
 
     FullScreen.prototype.run = function(button, event) {
-      Util.full_screen(button.slide.show.node);
+      Util.full_screen(button.slide.node);
       return this.is_full_screen = true;
     };
 
